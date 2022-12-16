@@ -1,13 +1,58 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r}
 load("./PISA.Rdata")
 head(aux)
 ```
+
 ```{r}
 names(aux)
 ```
+
+```{r}
+aux1=aux[,c(2, 5, 6, 7, 10)]
+names(aux1)
+```
+
+```{r}
+library(readxl)
+comp <- read_excel("cOMPETENCIES 4eso REDUIT.xlsx")
+head(comp)
+```
+
+```{R}
+comp=comp[c(1:7, 10:11 )]
+head(comp)
+```
+
+```{R}
+comp$ANY = comp$ANY - min(comp$ANY)
+comp$PCAT = scale(comp$PCAT, center = T, scale = F)
+comp$PCAST = scale(comp$PCAST, center = T, scale = F)
+comp$PANG = scale(comp$PANG, center = T, scale = F)
+comp$PMAT = scale(comp$PMAT, center = T, scale = F)
+comp$PCIEN = scale(comp$PCIEN, center = T, scale = F)
+
+comp$NATURALESA = factor(comp$NATURALESA)
+comp$GENERE = factor(comp$GENERE)
+comp$HÀBITAT = factor(comp$HÀBITAT, levels = c("Fins a 10000", "De 10001 a 100000", "Més de 100000"))
+head(comp)
+```
+
+```{R}
+model = lm(PMAT ~ . + PCAT:GENERE, data=comp)
+summary(model)
+
+```
+
+
+
+
+idee: regression on the Scores and Classification on Repeated
+
 
