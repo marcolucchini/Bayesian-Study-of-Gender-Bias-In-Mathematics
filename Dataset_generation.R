@@ -64,13 +64,15 @@ Sise = df3
 
 remove(list = c("df", "df2", "df3", "keep", "remove"))
 
-save(list = c("Quart", "Sise"), file = "data_bayes.Rdata")
+# save(list = c("Quart", "Sise"), file = "data_bayes.Rdata")
 
 # --------------------------------------------------
 ###       Exploratory analysis  
 # --------------------------------------------------
 
-df = Sise
+load("data_bayes.Rdata")
+
+df = Alumni
 
 library(tidyverse)
 
@@ -118,44 +120,63 @@ p_(pm)
 
 
 # --------------------------------------------------
-## Corss dataset
+##              Corss dataset
 # --------------------------------------------------
 
-# df1 = read.csv("Quart_2022.csv")
-df$GENERE = as.factor(df$GENERE)
-df$AREA_TERRITORIAL = as.factor(df$AREA_TERRITORIAL)
-df$NATURALESA = as.factor(df$NATURALESA)
-df$HÀBITAT = as.factor(df$HÀBITAT)
+df1 = read.csv("Quart_2022.csv")
+df1$GENERE = as.factor(df1$GENERE)
+df1$NATURALESA = as.factor(df1$NATURALESA)
+df1$HÀBITAT = as.factor(df1$HÀBITAT)
 keep = c("ANY", "CODI_ALUMNE", "PCAT", "PCAST", "PANG", "PMAT", "GENERE", "MES_NAIXEMENT", "ANY_NAIXEMENT", "NATURALESA","HÀBITAT")
 df1_1 = df1[-which(is.na(df1$CODI_ALUMNE)),keep]
 
 
-# df2 = read.csv("Sise_2022.csv")
-df$GENERE = as.factor(df$GENERE)
-df$NATURALESA = as.factor(df$NATURALESA)
-df$HÀBITAT = as.factor(df$HÀBITAT)
+df2 = read.csv("Sise_2022.csv")
+df2$GENERE = as.factor(df2$GENERE)
+df2$AREA_TERRITORIAL = as.factor(df2$AREA_TERRITORIAL)
+df2$NATURALESA = as.factor(df2$NATURALESA)
+df2$HÀBITAT = as.factor(df2$HÀBITAT)
 keep = c("ANY", "CODI_ALUMNE", "PCAT", "PCAST", "PANG", "PMAT", "GENERE", "MES_NAIXEMENT", "ANY_NAIXEMENT", "AREA_TERRITORIAL", "NATURALESA", "HÀBITAT")         
 df2_1 = df2[-which(is.na(df2$CODI_ALUMNE)),keep]
 
-df6 = merge(df1_1, df2_1, by = "CODI_ALUMNE")
-
-df6$GENERE.y = as.factor(df6$GENERE.y)
-df6$GENERE.x = as.factor(df6$GENERE.x)
-df6$GENERE.y = droplevels(df6$GENERE.y)
-sum(df6$GENERE.x == df6$GENERE.y)
-
+df6 = merge(df1_1, df2_1, by = "CODI_ALUMNE")  # x = 4 and y = 6
 
 # Consistency checks
-df6 = df6[which(df6$GENERE.x == df6$GENERE.y),]
-df6 = df6[which(df6$MES_NAIXEMENT.x == df6$MES_NAIXEMENT.y),]
-df6 = df6[which(df6$ANY_NAIXEMENT.x == df6$ANY_NAIXEMENT.y),]
-
-sum(df6$HÀBITAT.x == df6$HÀBITAT.y)
-sum(df6$NATURALESA.x == df6$NATURALESA.y)
-
+df6$GENERE.y = droplevels(df6$GENERE.y)
+df6$HÀBITAT.x = droplevels(df6$HÀBITAT.x)
+df6$NATURALESA.y = droplevels(df6$NATURALESA.y)
+df6 = df6[which(df6$GENERE.x == df6$GENERE.y),]     # same gender
+df6 = df6[which(df6$MES_NAIXEMENT.x == df6$MES_NAIXEMENT.y),]   # same month
+df6 = df6[which(df6$ANY_NAIXEMENT.x == df6$ANY_NAIXEMENT.y),]   # same age
+df6 = df6[which(df6$HÀBITAT.x == df6$HÀBITAT.y),]   # same city
+levels(df6$NATURALESA.y) <- c("Privada","Privada", "Pública", "Pública") # fix levels
+df6 = df6[which(df6$NATURALESA.x == df6$NATURALESA.y),]
 
 summary(df6)
 
-colSums(is.na(df6))
+# Remove Na
+df7 = na.omit(df6)
 
-levels(as.factor(df6$AREA_TERRITORIAL))
+# Remove columns
+keep7 = c("PCAT.x", "PCAST.x", "PANG.x", "PMAT.x", "GENERE.x", "NATURALESA.x", "HÀBITAT.x", "PCAT.y", "PCAST.y", "PANG.y", "PMAT.y", "AREA_TERRITORIAL")      
+df8 = df7[,keep7]
+df8$PLENG_4 = rowMeans(df8[,c(1,2)])
+df8$PLENG_6 = rowMeans(df8[,c(8,9)])
+
+# Remove last columns and change name
+keep8 = c("PMAT.x", "GENERE.x", "NATURALESA.x", "HÀBITAT.x","AREA_TERRITORIAL", "PMAT.y", "PLENG_4", "PLENG_6", "PANG.x", "PANG.y")         
+df9 = df8[,keep8]
+colnames(df9) = c("PMAT_6", "GENERE", "NATURALESA", "HÀBITAT","AREA_TERRITORIAL", "PMAT_4", "PLENG_4", "PLENG_6", "PANG_4", "PANG_6")         
+
+Alumni = df9
+
+remove(list=c("df1", "df2", "df1_1", "df2_1", "df6", "df7", "df8", "df9", "keep", "keep7", "keep8"))
+
+# save(list = c("Alumni"), file = "alumni.Rdata")
+
+
+
+
+
+
+
