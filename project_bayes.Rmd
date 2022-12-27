@@ -5,54 +5,260 @@ output:
     df_print: paged
 ---
 
-```{r}
-load("./PISA.Rdata")
-head(aux)
+```{r include=FALSE}
+library(fastDummies)
+library(R2jags)
 ```
 
 ```{r}
-names(aux)
-```
+rm(list=ls())
+load("alumni.Rdata")
+names(alumni)[4] = "HABITAT"
+head(alumni)
 
-```{r}
-aux1=aux[,c(2, 5, 6, 7, 10)]
-names(aux1)
-```
-
-```{r}
-library(readxl)
-comp <- read_excel("cOMPETENCIES 4eso REDUIT.xlsx")
-head(comp)
+alumni=alumni[sample(1:length(alumni$PMAT_6), replace = F, size = 4000), ]
 ```
 
 ```{R}
-comp=comp[c(1:7, 10:11 )]
-head(comp)
+dim(alumni)
 ```
 
 ```{R}
-comp$ANY = comp$ANY - min(comp$ANY)
-comp$PCAT = scale(comp$PCAT, center = T, scale = F)
-comp$PCAST = scale(comp$PCAST, center = T, scale = F)
-comp$PANG = scale(comp$PANG, center = T, scale = F)
-comp$PMAT = scale(comp$PMAT, center = T, scale = F)
-comp$PCIEN = scale(comp$PCIEN, center = T, scale = F)
+#alumni$ANY = alumni$ANY - min(alumni$ANY)
 
-comp$NATURALESA = factor(comp$NATURALESA)
-comp$GENERE = factor(comp$GENERE)
-comp$HÀBITAT = factor(comp$HÀBITAT, levels = c("Fins a 10000", "De 10001 a 100000", "Més de 100000"))
-head(comp)
+# for(i in 0:2){
+#   indices = which(alumni$ANY == i)
+#   alumni$PCAT[indices] = scale(alumni$PCAT[indices], center = T, scale = F)
+#   alumni$PCAST[indices] = scale(alumni$PCAST[indices], center = T, scale = F)
+#   alumni$PANG[indices] = scale(alumni$PANG[indices], center = T, scale = F)
+#   alumni$PMAT[indices] = scale(alumni$PMAT[indices], center = T, scale = F)
+#   alumni$PCIEN[indices] = scale(alumni$PCIEN[indices], center = T, scale = F)
+#   alumni$PUMAN[indices] = scale(alumni$PUMAN[indices], center = T, scale = F)
+# }
+
+alumni = dummy_cols(alumni, select_columns = c("NATURALESA", "GENERE", "HABITAT"), remove_first_dummy = T, remove_selected_columns = T)
+
+head(alumni)
+```
+
+```{r}
+areas = dummy_cols(data.frame(Area = alumni$AREA_TERRITORIAL), remove_first_dummy = T, remove_selected_columns = T)
+names(areas)
+m=dim(areas)[2]
 ```
 
 ```{R}
-model = lm(PMAT ~ . + PCAT:GENERE, data=comp)
-summary(model)
+# model = lm(PMAT ~ . - PUMAN + PUMAN:GENERE, data=alumni)
+# summary(model)
+```
+
+```{R}
+# plot(function(x){3 - 1*exp(-1*x)}, xlim=c(0,100), xlab="age", ylab="length")
+# plot(function(x){3 - 1*exp(-0.1*x)}, xlim=c(0,100), add=TRUE, lty=2)
+# plot(function(x){3 - 1*exp(-0.01*x)}, xlim=c(0,100), add=TRUE, lty=2)
+# legend("bottomright",c("b2=1","b2=0.1","b2=0.01"), lty=c(1,2,3))
 
 ```
 
+#in analisi descriptiva ver si las dferentes covariatas tienen:
+# - un oattern particular
+# - una varianza diferente
+# HACER PLOTS
 
+#si en catalano subes de uno la nota es probable que la subas tambien en mate?
 
+## Modelo 1: sin areas, ni interacciòn
 
-idee: regression on the Scores and Classification on Repeated
+```{R}
+mod.alumni <- "
+model {
 
+ for (i in 1:n) {
+  y[i]~ dnorm(b0 + b1*x1[i] + b2*x2[i] + b3*x3[i] + b4*x4[i] + b5*x5[i] + b6*x6[i] + b7*x7[i] + b8*x8[i] + b9*x9[i], tau_y)
+ }
+ 
+ b0 ~ dnorm(0, 1)
+ b1 ~ dnorm(1, 1)  
+ b2 ~ dnorm(1, 1)
+ b3 ~ dnorm(1, 1)
+ b4 ~ dnorm(1, 1)
+ b5 ~ dnorm(0, 1)
+ b6 ~ dnorm(0, 1)
+ b7 ~ dnorm(0, 1)
+ b8 ~ dnorm(0, 1)
+ b9 ~ dnorm(0, 1)
 
+ tau_y ~ dgamma(0.001, 0.001)
+ sigma_y <- 1/sqrt(tau_y)
+
+}
+"
+
+Iter <- 5000
+Burn <- 400
+Chain <- 2
+Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+
+data = with(alumni, list(y = PMAT_6, x1 = PMAT_4, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x7=`HABITAT_Fins a 10000`, x8=`HABITAT_Més de 100000`, x9=GENERE_H, n = dim(alumni)[1]))
+
+parameters <- c("b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "sigma_y")
+
+initials=list(list(b0 = 3, b1 = 1, b2= 0.1, b3=0, b4=0, b5=0, b6=0, b7=0,b8=0,b9=0,
+                   tau_y = 4),
+              list(b0 = 2, b1 = 1.5, b2= 0.2, b3=0, b4=1, b5=1, b6=1, b7=1, b8=1,b9=1,
+                   tau_y = 2))
+```
+
+```{R cache=T}
+alumni.sim <- jags(data, inits=initials, parameters.to.save=parameters, 
+		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
+		  model=textConnection(mod.alumni))
+
+traceplot(alumni.sim, mfrow = c(2,2), varname = parameters, col=c("black","red"), ask=F)
+```
+
+```{R}
+print(alumni.sim, digits=2)
+```
+
+```{r}
+linea = which(rownames(alumni.sim$BUGSoutput$summary)=="deviance")
+
+confid.inter = alumni.sim$BUGSoutput$summary[-linea,c(3,7)]
+plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue")
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red")
+abline(h=0, lty=2)
+```
+
+<!-- ############################################ -->
+```{R}
+mod.alumni.2 <- "
+model {
+
+ for (i in 1:n) {
+  y[i]~ dnorm(b0 + b1*x1[i] + b2*x2[i] + b3*x3[i] + b4*x4[i] + b5*x5[i] + b6*x6[i] + b7*x7[i] + b8*x8[i] + b9*x9[i] + sum(G*geo[i,]), tau_y)
+ }
+ 
+ b0 ~ dnorm(0, 1)
+ b1 ~ dnorm(1, 1)  
+ b2 ~ dnorm(1, 1)
+ b3 ~ dnorm(1, 1)
+ b4 ~ dnorm(1, 1)
+ b5 ~ dnorm(0, 1)
+ b6 ~ dnorm(0, 1)
+ b7 ~ dnorm(0, 1)
+ b8 ~ dnorm(0, 1)
+ b9 ~ dnorm(0, 1)
+
+ tau_y ~ dgamma(0.001, 0.001)
+ sigma_y <- 1/sqrt(tau_y)
+ 
+ for(i in 1:m) {
+ G[i] ~ dnorm(0, tau_g)
+ # G[i] ~ dnorm(0, 0.001)
+ }
+ 
+ tau_g ~ dgamma(0.001, 0.001)
+ sigma_g <- 1/sqrt(tau_g)
+ # sigma_g=1
+}
+"
+
+Iter <- 5000
+Burn <- 400
+Chain <- 2
+Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+
+data.2 <- list(y = alumni$PMAT_6, x1 = alumni$PMAT_4, x2=alumni$PLENG_4, x3=alumni$PLENG_6, x4=alumni$PANG_4, x5=alumni$PANG_6, x6=alumni$NATURALESA_Pública, x7=alumni$`HABITAT_Fins a 10000`, x8=alumni$`HABITAT_Més de 100000`, x9=alumni$GENERE_H, geo=areas, n = dim(alumni)[1], m=m)
+
+parameters.2 <- c("b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "sigma_y", "sigma_g", "G")
+
+initials.2=list(list(b0 = 3, b1 = 1, b2= 0.1, b3=0, b4=0, b5=0, b6=0, b7=0,b8=0,b9=0,
+                   tau_y = 4, tau_g= 4, G=rep(0,m)),
+              list(b0 = 2, b1 = 1.5, b2= 0.2, b3=0, b4=1, b5=1, b6=1, b7=1, b8=1,b9=1,
+                   tau_y = 2, tau_g = 2, G=rep(0,m)))
+```
+
+```{R cache=T}
+alumni.sim.2 <- jags(data.2, inits=initials.2, parameters.to.save=parameters.2, 
+		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
+		  model=textConnection(mod.alumni.2))
+
+traceplot(alumni.sim.2, mfrow = c(2,2), varname = parameters.2, col=c("black","red"), ask=F)
+```
+
+```{R}
+print(alumni.sim.2, digits=2)
+```
+
+```{r}
+linea = which(rownames(alumni.sim.2$BUGSoutput$summary)=="deviance")
+
+confid.inter = alumni.sim.2$BUGSoutput$summary[-linea,c(3,7)]
+plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue")
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red")
+abline(h=0, lty=2)
+```
+
+<!-- ############################################## -->
+
+```{R}
+mod.alumni.3 <- "
+model {
+
+ for (i in 1:n) {
+  y[i]~ dnorm(b0 + b1*x1[i] + b2*x2[i] + b3*x3[i] + b4*x4[i] + b5*x5[i] + b6*x6[i] + b7*x7[i] + b8*x8[i] + b9*x9[i] + b10*x3[i]*x9[i], tau_y)
+ }
+ 
+ b0 ~ dnorm(0, 1)
+ b1 ~ dnorm(1, 1)  
+ b2 ~ dnorm(1, 1)
+ b3 ~ dnorm(1, 1)
+ b4 ~ dnorm(1, 1)
+ b5 ~ dnorm(0, 1)
+ b6 ~ dnorm(0, 1)
+ b7 ~ dnorm(0, 1)
+ b8 ~ dnorm(0, 1)
+ b9 ~ dnorm(0, 1)
+ b10 ~ dnorm(0, 1)
+
+ tau_y ~ dgamma(0.001, 0.001)
+ sigma_y <- 1/sqrt(tau_y)
+
+}
+"
+
+Iter <- 5000
+Burn <- 400
+Chain <- 2
+Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+
+data.3 <- with(alumni, list(y = PMAT_6, x1 = PMAT_4, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x7=`HABITAT_Fins a 10000`, x8=`HABITAT_Més de 100000`, x9=GENERE_H, n = dim(alumni)[1]))
+
+parameters.3 <- c("b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "sigma_y")
+
+initials.3=list(list(b0 = 3, b1 = 1, b2= 0.1, b3=0, b4=0, b5=0, b6=0, b7=0,b8=0,b9=0, b10=0,
+                   tau_y = 4),
+              list(b0 = 2, b1 = 1.5, b2= 0.2, b3=0, b4=1, b5=1, b6=1, b7=1, b8=1,b9=1, b10=1,
+                   tau_y = 2))
+```
+
+```{R cache=T}
+alumni.sim.3 <- jags(data.3, inits=initials.3, parameters.to.save=parameters.3, 
+		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
+		  model=textConnection(mod.alumni.3))
+
+traceplot(alumni.sim.3, mfrow = c(2,2), varname = parameters.3, col=c("black","red"), ask=F)
+```
+
+```{R}
+print(alumni.sim.3, digits=2)
+```
+
+```{r}
+linea = which(rownames(alumni.sim.3$BUGSoutput$summary)=="deviance")
+confid.inter = alumni.sim.3$BUGSoutput$summary[-linea,c(3,7)]
+plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue")
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red")
+abline(h=0, lty=2)
+```

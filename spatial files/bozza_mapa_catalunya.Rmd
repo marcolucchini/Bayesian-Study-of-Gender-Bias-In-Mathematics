@@ -1,0 +1,70 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(mapSpain)
+
+Catalunya <- esp_get_munic_siane(region = "Catalunya") %>%
+  # Homogeinizo labels
+  mutate(
+    Provincia = esp_dict_translate(ine.prov.name, "es")
+  )
+
+
+ggplot(galicia) +
+  geom_sf(aes(fill = Provincia),
+    color = "grey70"
+  ) +
+  labs(title = "Provincias de Catalunya") +
+  scale_fill_discrete(
+    type =
+      hcl.colors(4, "Blues")
+  ) +
+  theme_bw()
+```
+
+```{r}
+# Load required libraries
+library(rgdal)
+library(ggplot2)
+
+# Load shapefile of Catalonia
+catalonia <- readOGR(dsn = "shapefiles/catalonia", layer = "catalonia")
+
+# Divide Catalonia into 12 territorial areas
+catalonia$area <- cut(catalonia$id, breaks = c(1, 6, 8, 9, 10, 11, 13, 15, 16, 17, 18, 19, 20), 
+  labels = c("Baix Llobregat", "Barcelona Comarques", "Barcelona II (Comarques)", "Catalunya Central", 
+  "Consorci d'Educació de Barcelona", "Girona", "Lleida", "Maresme - Vallès Oriental", "Maresme Vallès Oriental", 
+  "Maresme-Vallès Oriental", "Tarragona", "Terres de l'Ebre", "Vallès Occidental"))
+
+# Plot map of Catalonia
+ggplot() +
+  geom_polygon(data = catalonia, aes(x = long, y = lat, group = group, fill = area)) +
+  labs(title = "Map of Catalonia", fill = "Territorial Area") +
+  theme_minimal()
+
+```
+
+```{r}
+# Load the sf package
+library(sf)
+
+# Read the geopackage
+catalonia <- st_read("catalonia.gpkg")
+plot(catalonia)
+catalonia$geom
+st_layers(catalonia)
+
+shapefile <- readOGR(dsn = ".", layer = "gadm36_ESP_1", )
+
+shp.file <- read_sf(dsn = ".", layer = "gadm36_ESP_1")
+spatial.file <- sf::as_Spatial(shp.file)
+spatial.file$geometry <- NULL #Eliminate this geographic information
+```
+
+
+
