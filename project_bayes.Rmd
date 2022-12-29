@@ -6,6 +6,16 @@ output:
 ---
 
 ```{r include=FALSE}
+knitr::opts_chunk$set( echo=F )
+knitr::opts_chunk$set( cache=T )
+knitr::opts_chunk$set(out.width = '70%')
+knitr::opts_chunk$set(fig.align = "center")
+knitr::opts_chunk$set(tidy =TRUE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+
+```{r include=FALSE}
 library(fastDummies)
 library(R2jags)
 ```
@@ -13,9 +23,11 @@ library(R2jags)
 ```{r}
 rm(list=ls())
 load("alumni.Rdata")
+load("simulations.RData")
 names(alumni)[4] = "HABITAT"
 head(alumni)
 
+set.seed(1234)
 alumni=alumni[sample(1:length(alumni$PMAT_6), replace = F, size = 4000), ]
 ```
 
@@ -42,113 +54,53 @@ head(alumni)
 ```
 
 ```{r}
-areas = dummy_cols(data.frame(Area = alumni$AREA_TERRITORIAL), remove_first_dummy = T, remove_selected_columns = T)
-names(areas)
-m=dim(areas)[2]
-```
+#problema que una de las areas està escrita en manera diferente
 
-```{R}
-# model = lm(PMAT ~ . - PUMAN + PUMAN:GENERE, data=alumni)
-# summary(model)
-```
-
-```{R}
-# plot(function(x){3 - 1*exp(-1*x)}, xlim=c(0,100), xlab="age", ylab="length")
-# plot(function(x){3 - 1*exp(-0.1*x)}, xlim=c(0,100), add=TRUE, lty=2)
-# plot(function(x){3 - 1*exp(-0.01*x)}, xlim=c(0,100), add=TRUE, lty=2)
-# legend("bottomright",c("b2=1","b2=0.1","b2=0.01"), lty=c(1,2,3))
-
-```
-
-#in analisi descriptiva ver si las dferentes covariatas tienen:
-# - un oattern particular
-# - una varianza diferente
-# HACER PLOTS
-
-#si en catalano subes de uno la nota es probable que la subas tambien en mate?
-
-## Modelo 1: sin areas, ni interacciòn
-
-```{R}
-mod.alumni <- "
-model {
-
- for (i in 1:n) {
-  y[i]~ dnorm(b0 + b1*x1[i] + b2*x2[i] + b3*x3[i] + b4*x4[i] + b5*x5[i] + b6*x6[i] + b7*x7[i] + b8*x8[i] + b9*x9[i], tau_y)
- }
- 
- b0 ~ dnorm(0, 1)
- b1 ~ dnorm(1, 1)  
- b2 ~ dnorm(1, 1)
- b3 ~ dnorm(1, 1)
- b4 ~ dnorm(1, 1)
- b5 ~ dnorm(0, 1)
- b6 ~ dnorm(0, 1)
- b7 ~ dnorm(0, 1)
- b8 ~ dnorm(0, 1)
- b9 ~ dnorm(0, 1)
-
- tau_y ~ dgamma(0.001, 0.001)
- sigma_y <- 1/sqrt(tau_y)
-
-}
-"
-
-Iter <- 5000
-Burn <- 400
-Chain <- 2
-Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
-
-data = with(alumni, list(y = PMAT_6, x1 = PMAT_4, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x7=`HABITAT_Fins a 10000`, x8=`HABITAT_Més de 100000`, x9=GENERE_H, n = dim(alumni)[1]))
-
-parameters <- c("b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "sigma_y")
-
-initials=list(list(b0 = 3, b1 = 1, b2= 0.1, b3=0, b4=0, b5=0, b6=0, b7=0,b8=0,b9=0,
-                   tau_y = 4),
-              list(b0 = 2, b1 = 1.5, b2= 0.2, b3=0, b4=1, b5=1, b6=1, b7=1, b8=1,b9=1,
-                   tau_y = 2))
-```
-
-```{R cache=T}
-alumni.sim <- jags(data, inits=initials, parameters.to.save=parameters, 
-		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
-		  model=textConnection(mod.alumni))
-
-traceplot(alumni.sim, mfrow = c(2,2), varname = parameters, col=c("black","red"), ask=F)
-```
-
-```{R}
-print(alumni.sim, digits=2)
+levels(alumni$AREA_TERRITORIAL)
 ```
 
 ```{r}
-linea = which(rownames(alumni.sim$BUGSoutput$summary)=="deviance")
+alumni$AREA_TERRITORIAL[alumni$AREA_TERRITORIAL == "Maresme Vallès Oriental" | alumni$AREA_TERRITORIAL == "Maresme-Vallès Oriental"] = "Maresme - Vallès Oriental" 
 
-confid.inter = alumni.sim$BUGSoutput$summary[-linea,c(3,7)]
-plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue")
-points(1:length(confid.inter[,1]), confid.inter[,2], col="red")
-abline(h=0, lty=2)
+alumni$AREA_TERRITORIAL = factor(alumni$AREA_TERRITORIAL)
+
+levels(alumni$AREA_TERRITORIAL)
 ```
 
-<!-- ############################################ -->
+
+
+```{r}
+areas = dummy_cols(data.frame(Area = alumni$AREA_TERRITORIAL), remove_first_dummy = T, remove_selected_columns = T)
+names(areas)=levels(alumni$AREA_TERRITORIAL)[-1]
+m=dim(areas)[2]
+names(areas)
+```
+
+<!-- #in analisi descriptiva ver si las dferentes covariatas tienen: - un oattern particular - una varianza diferente -->
+
+<!-- #si en catalano subes de uno la nota es probable que la subas tambien en mate? -->
+
+### 1) Modelo completo: con areas territoriales y interaccion sexo:lenguas
+
 ```{R}
-mod.alumni.2 <- "
+mod.alumni.1 <- "
 model {
 
  for (i in 1:n) {
-  y[i]~ dnorm(b0 + b1*x1[i] + b2*x2[i] + b3*x3[i] + b4*x4[i] + b5*x5[i] + b6*x6[i] + b7*x7[i] + b8*x8[i] + b9*x9[i] + sum(G*geo[i,]), tau_y)
+  y[i]~ dnorm(b0 + mat4*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + ciud_peq*x7[i] + ciud_grande*x8[i] + sexo*x9[i] + interaccion*x3[i]*x9[i] + sum(G*geo[i,]), tau_y)
  }
  
  b0 ~ dnorm(0, 1)
- b1 ~ dnorm(1, 1)  
- b2 ~ dnorm(1, 1)
- b3 ~ dnorm(1, 1)
- b4 ~ dnorm(1, 1)
- b5 ~ dnorm(0, 1)
- b6 ~ dnorm(0, 1)
- b7 ~ dnorm(0, 1)
- b8 ~ dnorm(0, 1)
- b9 ~ dnorm(0, 1)
+ mat4 ~ dnorm(1, 1)  
+ leng4 ~ dnorm(1, 1)
+ leng6 ~ dnorm(1, 1)
+ ing4 ~ dnorm(1, 1)
+ ing6 ~ dnorm(0, 1)
+ publica ~ dnorm(0, 1)
+ ciud_peq ~ dnorm(0, 1)
+ ciud_grande ~ dnorm(0, 1)
+ sexo ~ dnorm(0, 1)
+ interaccion ~ dnorm(0, 1)
 
  tau_y ~ dgamma(0.001, 0.001)
  sigma_y <- 1/sqrt(tau_y)
@@ -169,58 +121,68 @@ Burn <- 400
 Chain <- 2
 Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
 
-data.2 <- list(y = alumni$PMAT_6, x1 = alumni$PMAT_4, x2=alumni$PLENG_4, x3=alumni$PLENG_6, x4=alumni$PANG_4, x5=alumni$PANG_6, x6=alumni$NATURALESA_Pública, x7=alumni$`HABITAT_Fins a 10000`, x8=alumni$`HABITAT_Més de 100000`, x9=alumni$GENERE_H, geo=areas, n = dim(alumni)[1], m=m)
+data.1 <- list(y = alumni$PMAT_6, x1 = alumni$PMAT_4, x2=alumni$PLENG_4, x3=alumni$PLENG_6, x4=alumni$PANG_4, x5=alumni$PANG_6, x6=alumni$NATURALESA_Pública, x7=alumni$`HABITAT_Fins a 10000`, x8=alumni$`HABITAT_Més de 100000`, x9=alumni$GENERE_H, geo=areas, n = dim(alumni)[1], m=m)
 
-parameters.2 <- c("b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "sigma_y", "sigma_g", "G")
+parameters.1 <- c("b0", "mat4", "leng4", "leng6", "ing4", "ing6", "publica", "ciud_peq", "ciud_grande", "sexo", "interaccion", "sigma_y", "sigma_g", "G")
 
-initials.2=list(list(b0 = 3, b1 = 1, b2= 0.1, b3=0, b4=0, b5=0, b6=0, b7=0,b8=0,b9=0,
+initials.1=list(list(b0 = 3, mat4 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publica=0, ciud_peq=0,ciud_grande=0,sexo=0,interaccion=0,
                    tau_y = 4, tau_g= 4, G=rep(0,m)),
-              list(b0 = 2, b1 = 1.5, b2= 0.2, b3=0, b4=1, b5=1, b6=1, b7=1, b8=1,b9=1,
+              list(b0 = 2, mat4 = 1.5, leng4= 0.2 , leng6=0, ing4=1, ing6=1, publica=1, ciud_peq=1, ciud_grande=1,sexo=1,interaccion=1,
                    tau_y = 2, tau_g = 2, G=rep(0,m)))
 ```
 
 ```{R cache=T}
-alumni.sim.2 <- jags(data.2, inits=initials.2, parameters.to.save=parameters.2, 
+if(0)
+alumni.sim.1 <- jags(data.1, inits=initials.1, parameters.to.save=parameters.1, 
 		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
-		  model=textConnection(mod.alumni.2))
+		  model=textConnection(mod.alumni.1))
 
-traceplot(alumni.sim.2, mfrow = c(2,2), varname = parameters.2, col=c("black","red"), ask=F)
+traceplot(alumni.sim.1, mfrow = c(2,2), varname = parameters.1, col=c("black","red"), ask=F)
 ```
 
 ```{R}
-print(alumni.sim.2, digits=2)
+print(alumni.sim.1, digits=2)
 ```
 
 ```{r}
-linea = which(rownames(alumni.sim.2$BUGSoutput$summary)=="deviance")
+output = alumni.sim.1
 
-confid.inter = alumni.sim.2$BUGSoutput$summary[-linea,c(3,7)]
-plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue")
-points(1:length(confid.inter[,1]), confid.inter[,2], col="red")
+significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
+significance
+```
+
+```{r}
+linea = which(rownames(output$BUGSoutput$summary)=="deviance")
+confid.inter = output$BUGSoutput$summary[-linea,c(3,7)]
+par(mfrow=c(1,1), mar = c(3, 1, 1, 1))
+plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16, axes = F, xlab="", ylab="")
+box()
+axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter))
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
 abline(h=0, lty=2)
 ```
 
-<!-- ############################################## -->
+### 2) Modelo sin areas territoriales, con interaccion sexo:lenguas
 
 ```{R}
-mod.alumni.3 <- "
+mod.alumni.2 <- "
 model {
 
  for (i in 1:n) {
-  y[i]~ dnorm(b0 + b1*x1[i] + b2*x2[i] + b3*x3[i] + b4*x4[i] + b5*x5[i] + b6*x6[i] + b7*x7[i] + b8*x8[i] + b9*x9[i] + b10*x3[i]*x9[i], tau_y)
+  y[i]~ dnorm(b0 + mat4*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + ciud_peq*x7[i] + ciud_grande*x8[i] + sexo*x9[i] + interaccion*x3[i]*x9[i], tau_y)
  }
  
  b0 ~ dnorm(0, 1)
- b1 ~ dnorm(1, 1)  
- b2 ~ dnorm(1, 1)
- b3 ~ dnorm(1, 1)
- b4 ~ dnorm(1, 1)
- b5 ~ dnorm(0, 1)
- b6 ~ dnorm(0, 1)
- b7 ~ dnorm(0, 1)
- b8 ~ dnorm(0, 1)
- b9 ~ dnorm(0, 1)
- b10 ~ dnorm(0, 1)
+ mat4 ~ dnorm(1, 1)  
+ leng4 ~ dnorm(1, 1)
+ leng6 ~ dnorm(1, 1)
+ ing4 ~ dnorm(1, 1)
+ ing6 ~ dnorm(0, 1)
+ publica ~ dnorm(0, 1)
+ ciud_peq ~ dnorm(0, 1)
+ ciud_grande ~ dnorm(0, 1)
+ sexo ~ dnorm(0, 1)
+ interaccion ~ dnorm(0, 1)
 
  tau_y ~ dgamma(0.001, 0.001)
  sigma_y <- 1/sqrt(tau_y)
@@ -233,17 +195,90 @@ Burn <- 400
 Chain <- 2
 Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
 
-data.3 <- with(alumni, list(y = PMAT_6, x1 = PMAT_4, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x7=`HABITAT_Fins a 10000`, x8=`HABITAT_Més de 100000`, x9=GENERE_H, n = dim(alumni)[1]))
+data.2 <- with(alumni, list(y = PMAT_6, x1 = PMAT_4, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x7=`HABITAT_Fins a 10000`, x8=`HABITAT_Més de 100000`, x9=GENERE_H, n = dim(alumni)[1]))
 
-parameters.3 <- c("b0", "b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10", "sigma_y")
+parameters.2 <- c("b0", "mat4", "leng4", "leng6", "ing4", "ing6", "publica", "ciud_peq", "ciud_grande", "sexo", "interaccion", "sigma_y")
 
-initials.3=list(list(b0 = 3, b1 = 1, b2= 0.1, b3=0, b4=0, b5=0, b6=0, b7=0,b8=0,b9=0, b10=0,
+initials.2=list(list(b0 = 3, mat4 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publica=0, ciud_peq=0,ciud_grande=0,sexo=0, interaccion=0,
                    tau_y = 4),
-              list(b0 = 2, b1 = 1.5, b2= 0.2, b3=0, b4=1, b5=1, b6=1, b7=1, b8=1,b9=1, b10=1,
+              list(b0 = 2, mat4 = 1.5, leng4= 0.2, leng6=0, ing4=1, ing6=1, publica=1, ciud_peq=1, ciud_grande=1,sexo=1, interaccion=1,
                    tau_y = 2))
 ```
 
 ```{R cache=T}
+if(0)
+alumni.sim.2 <- jags(data.2, inits=initials.2, parameters.to.save=parameters.2, 
+		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
+		  model=textConnection(mod.alumni.2))
+
+traceplot(alumni.sim.2, mfrow = c(2,2), varname = parameters.2, col=c("black","red"), ask=F)
+```
+
+```{R}
+print(alumni.sim.2, digits=2)
+```
+
+```{r}
+output = alumni.sim.2
+
+significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
+significance
+```
+
+```{r}
+linea = which(rownames(output$BUGSoutput$summary)=="deviance")
+confid.inter = output$BUGSoutput$summary[-linea,c(3,7)]
+par(mfrow=c(1,1), mar = c(3, 1, 1, 1))
+plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16, axes = F, xlab="", ylab="")
+box()
+axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter))
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
+abline(h=0, lty=2)
+```
+
+### 3) Modelo: quito "ciudad"
+
+```{R}
+mod.alumni.3 <- "
+model {
+
+ for (i in 1:n) {
+  y[i]~ dnorm(b0 + mat4*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + sexo*x9[i] + interaccion*x3[i]*x9[i], tau_y)
+ }
+ 
+ b0 ~ dnorm(0, 1)
+ mat4 ~ dnorm(1, 1)  
+ leng4 ~ dnorm(1, 1)
+ leng6 ~ dnorm(1, 1)
+ ing4 ~ dnorm(1, 1)
+ ing6 ~ dnorm(0, 1)
+ publica ~ dnorm(0, 1)
+ sexo ~ dnorm(0, 1)
+ interaccion ~ dnorm(0, 1)
+
+ tau_y ~ dgamma(0.001, 0.001)
+ sigma_y <- 1/sqrt(tau_y)
+
+}
+"
+
+Iter <- 5000
+Burn <- 400
+Chain <- 2
+Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+
+data.3 <- with(alumni, list(y = PMAT_6, x1 = PMAT_4, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x9=GENERE_H, n = dim(alumni)[1]))
+
+parameters.3 <- c("b0", "mat4", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "interaccion", "sigma_y")
+
+initials.3=list(list(b0 = 3, mat4 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publica=0,sexo=0, interaccion=0,
+                   tau_y = 4),
+              list(b0 = 2, mat4 = 1.5, leng4= 0.3, leng6=0, ing4=1, ing6=1, publica=1, sexo=1, interaccion=1,
+                   tau_y = 2))
+```
+
+```{R cache=T}
+if(0)
 alumni.sim.3 <- jags(data.3, inits=initials.3, parameters.to.save=parameters.3, 
 		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
 		  model=textConnection(mod.alumni.3))
@@ -256,9 +291,183 @@ print(alumni.sim.3, digits=2)
 ```
 
 ```{r}
-linea = which(rownames(alumni.sim.3$BUGSoutput$summary)=="deviance")
-confid.inter = alumni.sim.3$BUGSoutput$summary[-linea,c(3,7)]
-plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue")
-points(1:length(confid.inter[,1]), confid.inter[,2], col="red")
+output = alumni.sim.3
+
+significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
+significance
+```
+
+```{r}
+linea = which(rownames(output$BUGSoutput$summary)=="deviance")
+confid.inter = output$BUGSoutput$summary[-linea,c(3,7)]
+par(mfrow=c(1,1), mar = c(3, 1, 1, 1))
+plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16, axes = F, xlab="", ylab="")
+box()
+axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter))
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
 abline(h=0, lty=2)
 ```
+
+Las variables sexo y lenguas no son significativass por si, en el sentido que no hay una verdadera diferencia entre chicos y chicas y tampoco hay una influencia directa entre lenguas y mate, pero su interaccion parece ser significativa. Eso puede indicar que 
+
+
+### 4) Modelo: quito "sexo"
+
+```{R}
+mod.alumni.4 <- "
+model {
+
+ for (i in 1:n) {
+  y[i]~ dnorm(b0 + mat4*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + interaccion*x3[i]*x9[i], tau_y)
+ }
+ 
+ b0 ~ dnorm(0, 1)
+ mat4 ~ dnorm(1, 1)  
+ leng4 ~ dnorm(1, 1)
+ leng6 ~ dnorm(1, 1)
+ ing4 ~ dnorm(1, 1)
+ ing6 ~ dnorm(0, 1)
+ publica ~ dnorm(0, 1)
+ interaccion ~ dnorm(0, 1)
+
+ tau_y ~ dgamma(0.001, 0.001)
+ sigma_y <- 1/sqrt(tau_y)
+
+}
+"
+
+Iter <- 5000
+Burn <- 400
+Chain <- 2
+Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+
+data.4 <- with(alumni, list(y = PMAT_6, x1 = PMAT_4, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x9=GENERE_H, n = dim(alumni)[1]))
+
+parameters.4 <- c("b0", "mat4", "leng4", "leng6", "ing4", "ing6", "publica", "interaccion", "sigma_y")
+
+initials.4=list(list(b0 = 3, mat4 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publica=0, interaccion=0,
+                   tau_y = 4),
+              list(b0 = 2, mat4 = 1.5, leng4= 0.3, leng6=0, ing4=1, ing6=1, publica=1, interaccion=1,
+                   tau_y = 2))
+```
+
+```{R cache=T}
+if(0)
+alumni.sim.4 <- jags(data.4, inits=initials.4, parameters.to.save=parameters.4, 
+		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
+		  model=textConnection(mod.alumni.4))
+
+traceplot(alumni.sim.4, mfrow = c(2,2), varname = parameters.4, col=c("black","red"), ask=F)
+```
+
+```{R}
+print(alumni.sim.4, digits=2)
+```
+
+```{r}
+output = alumni.sim.4
+
+significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
+significance
+```
+
+```{r}
+linea = which(rownames(output$BUGSoutput$summary)=="deviance")
+confid.inter = output$BUGSoutput$summary[-linea,c(3,7)]
+par(mfrow=c(1,1), mar = c(3, 1, 1, 1))
+plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16, axes = F, xlab="", ylab="")
+box()
+axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter))
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
+abline(h=0, lty=2)
+```
+
+Las variables sexo y lenguas no son significativass por si, en el sentido que no hay una verdadera diferencia entre chicos y chicas y tampoco hay una influencia directa entre lenguas y mate, pero su interaccion parece ser significativa. Eso puede indicar que 
+
+
+### 5) Modelo: quito "leng6"
+
+```{R}
+mod.alumni.5 <- "
+model {
+
+ for (i in 1:n) {
+  y[i]~ dnorm(b0 + mat4*x1[i] + leng4*x2[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + interaccion*x3[i]*x9[i], tau_y)
+ }
+ 
+ b0 ~ dnorm(0, 1)
+ mat4 ~ dnorm(1, 1)  
+ leng4 ~ dnorm(1, 1)
+ ing4 ~ dnorm(1, 1)
+ ing6 ~ dnorm(0, 1)
+ publica ~ dnorm(0, 1)
+ interaccion ~ dnorm(0, 1)
+
+ tau_y ~ dgamma(0.001, 0.001)
+ sigma_y <- 1/sqrt(tau_y)
+
+}
+"
+
+Iter <- 5000
+Burn <- 400
+Chain <- 2
+Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+
+data.5 <- with(alumni, list(y = PMAT_6, x1 = PMAT_4, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x9=GENERE_H, n = dim(alumni)[1]))
+
+parameters.5 <- c("b0", "mat4", "leng4", "ing4", "ing6", "publica", "interaccion", "sigma_y")
+
+initials.5=list(list(b0 = 3, mat4 = 1, leng4= 0.1, ing4=0, ing6=0, publica=0, interaccion=0,
+                   tau_y = 4),
+              list(b0 = 2, mat4 = 1.5, leng4= 0.3, ing4=1, ing6=1, publica=1, interaccion=1,
+                   tau_y = 2))
+```
+
+```{R cache=T}
+if(0)
+alumni.sim.5 <- jags(data.5, inits=initials.5, parameters.to.save=parameters.5, 
+		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
+		  model=textConnection(mod.alumni.5))
+
+traceplot(alumni.sim.5, mfrow = c(2,2), varname = parameters.5, col=c("black","red"), ask=F)
+```
+
+```{R}
+print(alumni.sim.5, digits=2)
+```
+
+```{r}
+output = alumni.sim.5
+
+significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
+significance
+```
+
+```{r}
+linea = which(rownames(output$BUGSoutput$summary)=="deviance")
+confid.inter = output$BUGSoutput$summary[-linea,c(3,7)]
+par(mfrow=c(1,1), mar = c(3, 1, 1, 1))
+plot(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16, axes = F, xlab="", ylab="")
+box()
+axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter))
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
+abline(h=0, lty=2)
+```
+
+
+```{r}
+df = data.frame( modello=1:5, DIC=c(alumni.sim.1$BUGSoutput$DIC, alumni.sim.2$BUGSoutput$DIC, alumni.sim.3$BUGSoutput$DIC, 
+                                    alumni.sim.4$BUGSoutput$DIC, alumni.sim.5$BUGSoutput$DIC))
+df
+```
+
+```{r}
+plot(df, type="l")
+```
+
+
+```{r}
+# save( list=c("alumni.sim.1", "alumni.sim.2", "alumni.sim.3", "alumni.sim.4", "alumni.sim.5"), file = "simulations.RData")
+```
+

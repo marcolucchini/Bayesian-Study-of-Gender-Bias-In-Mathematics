@@ -1,0 +1,16 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+load("alumni.Rdata")
+
+names(alumni)
+
+```
+
+```{r}
+pairs(alumni[,c(1,6,7,8,9,10)])
+```
+
