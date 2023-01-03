@@ -1,0 +1,439 @@
+---
+title: "Bayesian Methods Final Project"
+subtitle: "SESGO DE GÉNERO EN EL RENDIMIENTO ACADÉMICO EN LA MATERIA DE MATEMÁTICAS"
+author:
+- Aráiztegui, Aránzazu
+- Ferrara, Lorenzo
+- Lucchini, Marco
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document: 
+    fig_caption: yes
+    number_sections: true
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+    theme: united
+    highlight: tango
+header-includes:
+- \pagenumbering{gobble}
+- \usepackage{subfig}
+- \usepackage[labelsep=period]{caption}
+- \usepackage[labelfont=bf]{caption}
+- \renewcommand{\and}{\\}
+---
+
+
+\renewcommand{\contentsname}{Índice}
+\renewcommand{\figurename}{Figura}
+\renewcommand{\tablename}{Tabla}
+
+\captionsetup{width=.75\textwidth}
+
+\vspace{120mm}
+
+<left>
+![](Logo UPC.png){width="50%"}
+</left> <right>
+![](Logo UB.png){width="50%"}
+</right> 
+
+\newpage
+
+\tableofcontents
+
+\pagebreak
+
+\pagenumbering{arabic}
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+library(knitr)
+library(kableExtra)
+library(summarytools)
+library(ggplot2)
+library(fastDummies)
+library(R2jags)
+library(truncnorm)
+```
+
+```{r}
+load("alumni.Rdata")
+alumni$AREA_TERRITORIAL[alumni$AREA_TERRITORIAL == "Maresme Vallès Oriental" | alumni$AREA_TERRITORIAL == "Maresme-Vallès Oriental"] = "Maresme - Vallès Oriental" 
+
+alumni$AREA_TERRITORIAL = factor(alumni$AREA_TERRITORIAL)
+```
+
+
+
+
+# Introducción 
+
+El sesgo de género está presente en numerosos ámbitos de nuestra vida y se aprecia de forma notable en el ámbito educativo, más concretamente en las materias del ámbito STEAM. 
+\
+Parece ser que aunque no hay una evidente brecha de género en el comienzo de los estudios primarios, el sesgo de género comienza a aparecer de forma clara a lo largo del proceso educativo, agudizándose en las últimas etapas de la educación obligatoria y evidenciándose de forma clara en la educación universitaria.
+
+...
+
+## Descripción del problema
+
+Con el objetivo de evaluar la capacidad y el nivel de competencia en las diferentes áreas del conocimiento que tiene el alumnado de Cataluña, el Departament d’Educació de la Generalitat de Cataluña realiza una prueba de competencias y conocimientos básicos en las áreas lingüísticas, matemáticas y científico-tecnológicas en los últimos cursos de la educación primaria y secundaria.
+\
+Según el Departament se trata de una evaluación de carácter formativo y orientador que pueda servir tanto a los centros como al profesorado y al propio Departament para impulsar las mejoras en el sistema educativo catalán.
+
+
+## Objectivos del modelo
+
+Este trabajo tiene como objetivo principal ver si existe un sesgo de género en los resultados obtenidos en la competencia matemática con respecto al sexo y a las competencias humanísticas para ello intentaremos crear un modelo que relacione la puntuación obtenida en la competencia matemática con respecto al sexo, a las competencias lingüísticas e incluso con respecto al tipo de centro educativo o al tamaño de la población. 
+\
+De esta manera podríamos ver si en el sexo femenino no se da una diferencia entre el rendimiento en humanidades y matemáticas, personas con bajo rendimiento en humanidades también lo tendrían en matemáticas. 
+\
+Y en cambio en el sexo masculino personas con bajo rendimiento en humanidades tendrían buenos resultados en matemáticas.
+\
+Si ampliamos los datos y vemos la tabla de resultados para un mismo individuo en sexto de primaria y cuarto de la podríamos establecer un segundo objetivo que sería ver si se mantienen los resultados en ambos sexos o si hay diferencias significativas en cuanto al rendimiento en el área de matemáticas al aumentar la edad en relación al sexo.
+
+
+\newpage
+
+# Descripción de la base de datos
+
+La base de datos que hemos utilizado en este trabajo procede del catálogo de datos en abierto que proporciona la Generalitat de Catalunya en su página web. **IS a merge between QUARTZ and SISE on common id of the student.** Se puede acceder a la base de datos completa en el siguiente enlace:
+\
+[Avaluació de quart d’Educació Secundària Obligatòria | Dades obertes de Catalunya](https://analisi.transparenciacatalunya.cat/Educaci-/Avaluaci-de-quart-d-Educaci-Secund-ria-Obligat-ria/59vm-wwq7)
+\
+El dataset contiene los resultados obtenidos por el alumnado de cuarto curso de ESO en la evaluación de competencias básicas al final de la educación secundaria desde el año 2012.
+\
+Se incluye un código de alumno para poder hacer comparativas con los resultados obtenidos en sextos de primaria. Dado que el código solo está disponible a partir del año 2016 se utilizarán únicamente los datos del alunado a partir de este año.
+\
+La base de datos ha sido actualizada el 20 de octubre de 2022
+\
+**We have 46384 students**
+
+
+## Definición de las variables utilizadas
+
+Base de dades 
+
+| Nom de columna | Descripció | Tipus |
+|--------------------|-----------------------------------------------|----------------|
+| PMAT_4 | Puntuació global ponderada de competència matemàtica en el examen de Quart | Nombre |
+| PMAT_6 | Puntuació global ponderada de competència matemàtica en el examen de Sisè | Nombre |
+| PLENG_4 | Puntuació global ponderada de la competència lingüística en llengua catalana y castellana en el examen de Quart | Nombre |
+| PLENG_6 | Puntuació global ponderada de la competència lingüística en llengua catalana y castellana en el examen de Sisè | Nombre |
+| PANG_4 | Puntuació global ponderada de la competència lingüística en llengua anglesa en el examen de Quart | Nombre |
+| PANG_6 | Puntuació global ponderada de la competència lingüística en llengua anglesa en el examen de Sisè | Nombre |
+| GENERE | Gènere de l’alumne/a que es presenta a l’avaluació | Text Pla |
+| AREA_TERRITORIAL | Regió on es troba el centre de l’alumne/a que es presenta a l’avaluació | Text Pla |
+| NATURALESA | Determina si el centre de l’alumne/a és públic, privat o concertat | Text Pla |
+| HÀBITAT | Municipis per trams de població | Text Pla|
+
+
+
+## Análisis exploratorio de los datos
+
+We start by looking at our dataset, the students are evenly spread among boys and girls. Their distribution in the areas is the following.
+
+```{r his_area, out.width="90%", warning=FALSE, message=FALSE, fig.align='center'}
+area = alumni$AREA_TERRITORIAL
+ggplot(data.frame(area), aes(x=area)) +
+  geom_bar(fill="royalblue3") +
+  theme(axis.text.x = element_text(angle = 335, vjust = 1, hjust=0)) +
+  theme(plot.margin = margin(0,2,0,2, "cm")) +
+  ggtitle("Distribución de alumnos entre las áreas", ) + 
+  ylab("Número") +
+  xlab("Àrea")
+```
+
+Analyzing then the division in city we find that most of them lives in medium or big cities.
+
+```{r hist_ciudad, out.width="60%", warning=FALSE, message=FALSE, fig.align='center'}
+ciudad = factor(alumni$HÀBITAT, levels = c("Fins a 10000", "De 10001 a 100000", "Més de 100000"))
+ggplot(data.frame(ciudad), aes(x=ciudad)) +
+  geom_bar(fill="royalblue3") +
+  theme(axis.text.x = element_text(angle = 335, vjust = 0.5, hjust=0)) +
+  theme(plot.margin = margin(0,1,0,0, "cm")) +
+  ggtitle("Distribución de alumnos entre las hàbitat", ) + 
+  ylab("Número") +
+  xlab("Habitàt")
+```
+
+We now look at the grade obtained in the exam of english, lenguage and math in the Sisè and Quart exam. The grades are divided between boys and girls. From the plot we suppose that boys tend to have lower grades in english and lenguage while obtain better result in math with respect to girls.
+
+```{r boxplot_sise, out.width="80%", warning=FALSE, message=FALSE, fig.align='center'}
+set.seed(1234)
+df=alumni[sample(1:length(alumni$PMAT_6), replace = F, size = 4000), ]
+
+library(tidyverse)
+
+df_tmp = df[,c("PMAT_4",   "PMAT_6",  "PLENG_4",   "PLENG_6",   "PANG_4", "PANG_6",  "GENERE")]
+keep = c("PMAT_4",   "PMAT_6",  "PLENG_4",   "PLENG_6",   "PANG_4", "PANG_6",  "GENERE")
+df2 = df_tmp[,keep] %>%   # select relevant columns 
+  pivot_longer(c(1,2,3,4,5,6),names_to = 'Test')
+
+
+
+library(ggplot2)
+library(GGally)
+ggplot(data = df2, aes(x=GENERE,y=value, fill=GENERE)) + 
+  geom_boxplot()+
+#  scale_fill_brewer(palette="Green") + 
+#  geom_jitter(shape=16, position=position_jitter(0.2))+
+  labs(title = 'Comparación de resultados educativos por género',
+       y='Notas',x='') +
+  facet_wrap(~Test,nrow = 1)
+```
+
+
+We then look at the data in pairs. As espected the data are almost linearly distributed with low variability when comparing the same subject among the years, this means that students who where good in a subject in the Sisè exam were good also in the Quart exam and the opposite. In the other comparison the variability is greater. We also point out the distribution of frequency in the groups by gender, particularly in math where the difference between male and female is more evident.
+
+```{r ggpairs_sise, out.width="90%", fig.align='center', cache=TRUE}
+keep = c("PMAT_4",   "PMAT_6",  "PLENG_4",   "PLENG_6",   "PANG_4", "PANG_6",  "GENERE")
+set.seed(1999)
+df_sampl <- df[sample(1:dim(df)[1], 1000), keep]
+
+# Different aesthetics for different plot sections and plot types
+my_dens <- function(data, mapping, ...) {
+  ggplot(data = data, mapping=mapping) +
+    geom_density(..., mapping = ggplot2::aes(color = GENERE, alpha = 0.7), fill=NA) 
+}
+
+ggpairs(
+  df_sampl[,],
+  mapping = ggplot2::aes(color = GENERE, alpha = 0.8),
+  diag = list(continuous = my_dens),
+  upper = list(continuous = wrap("density", alpha = 0.5), combo = "box_no_facet"),
+  lower = list(continuous = wrap("points", alpha = 0.3), combo = wrap("dot_no_facet", alpha = 0.4)),
+  title = "Comparación de resultados entre sujetos"
+)
+```
+
+
+
+\newpage
+# Análisis bayesiano
+
+## Conjunto de modelos
+
+```{r}
+#tmp = alumni
+#alumni = tmp
+```
+
+
+```{r prep_mod1}
+#alumni = tmp
+
+names(alumni)[4] = "HABITAT"
+alumni = dummy_cols(alumni, select_columns = c("NATURALESA", "GENERE", "HABITAT"), remove_first_dummy = T, remove_selected_columns = T)
+areas = dummy_cols(data.frame(Area = alumni$AREA_TERRITORIAL), remove_first_dummy = T, remove_selected_columns = T)
+names(areas)=levels(alumni$AREA_TERRITORIAL)[-1]
+m=dim(areas)[2]
+
+n = 4000
+set.seed(1234)
+id_train = sample(1:length(alumni$PMAT_6), replace = F, size = n)
+train = alumni[id_train, ]
+test = alumni[-id_train, ]
+
+areas_train = areas[id_train, ]
+areas_test = areas[-id_train, ]
+
+```
+
+### Presentacion de los modelos
+
+
+```{r model_1}
+mod.alumni.1 <- "
+model {
+
+ for (i in 1:n) {
+  y[i]~ dnorm(b0 + mat6*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + ciud_peq*x7[i] + ciud_grande*x8[i] + sexo*x9[i] + interaccion*x3[i]*x9[i] + sum(G*geo[i,]), tau_y)
+ }
+ 
+ b0 ~ dnorm(0, 1)
+ mat6 ~ dnorm(1, 1)  
+ leng4 ~ dnorm(1, 1)
+ leng6 ~ dnorm(1, 1)
+ ing4 ~ dnorm(1, 1)
+ ing6 ~ dnorm(0, 1)
+ publica ~ dnorm(0, 1)
+ ciud_peq ~ dnorm(0, 1)
+ ciud_grande ~ dnorm(0, 1)
+ sexo ~ dnorm(0, 1)
+ interaccion ~ dnorm(0, 1)
+
+ tau_y ~ dgamma(0.001, 0.001)
+ sigma_y <- 1/sqrt(tau_y)
+ 
+ for(i in 1:m) {
+ G[i] ~ dnorm(0, tau_g)
+ # G[i] ~ dnorm(0, 0.001)
+ }
+ 
+ tau_g ~ dgamma(0.001, 0.001)
+ sigma_g <- 1/sqrt(tau_g)
+ # sigma_g=1
+}
+"
+
+Iter <- 5000
+Burn <- 400
+Chain <- 2
+Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+
+data.1 <- list(y = train$PMAT_4, x1 = train$PMAT_6, x2=train$PLENG_4, x3=train$PLENG_6, x4=train$PANG_4, x5=train$PANG_6, x6=train$NATURALESA_Pública, x7=train$`HABITAT_Fins a 10000`, x8=train$`HABITAT_Més de 100000`, x9=train$GENERE_H, geo= areas_train, n = dim(train)[1], m=m)
+
+parameters.1 <- c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "ciud_peq", "ciud_grande", "sexo", "interaccion", "sigma_y", "sigma_g", "G")
+
+initials.1=list(list(b0 = 3, mat6 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publica=0, ciud_peq=0,ciud_grande=0,sexo=0,interaccion=0,
+                   tau_y = 4, tau_g= 4, G=rep(0,m)),
+              list(b0 = 2, mat6 = 1.5, leng4= 0.2 , leng6=0, ing4=1, ing6=1, publica=1, ciud_peq=1, ciud_grande=1,sexo=1,interaccion=1,
+                   tau_y = 2, tau_g = 2, G=rep(0,m)))
+```
+
+### Justificación e interpretación de los modelos
+
+```{r fit_1, cache=T}
+# if(0)
+alumni.sim.1 <- jags(data.1, inits=initials.1, parameters.to.save=parameters.1, 
+		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
+		  model=textConnection(mod.alumni.1))
+```
+
+```{r traceplot_1}
+par(mar = c(2, 2, 2, 2))
+traceplot(alumni.sim.1, mfrow = c(4,3), varname = parameters.1, col=c("black","red"), ask=F)
+```
+
+```{r CI_param_1}
+output = alumni.sim.1
+significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
+
+linea = which(rownames(output$BUGSoutput$summary)=="deviance")
+confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]
+
+par(mfrow=c(1,1), mar = c(6, 3, 2, 1))
+plot(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16, axes = F, xlab="", ylab="", ylim = c(-1.5,11), main = "Intervalo de confianza del 95% para los coeficientes")
+segments(x0=1:length(confid.inter[,1]), y0 = confid.inter[,1], x1 = 1:length(confid.inter[,1]), y1 = confid.inter[,2], lty = 2)
+points(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16)
+box()
+axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter), las = 2)
+axis(2, -1:11, -1:11)
+points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
+points(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16)
+abline(h=0, lty=2)
+
+```
+
+
+### Validación de los modelos
+
+We now predict the values of PMAT_4 for the students in the test set and comopare the results.
+
+
+```{r attach_jags}
+# attach.jags(alumni.sim.1)
+#  coeff = data.frame(b0)
+#  coeff$mat6  =  mat6
+#  coeff$leng4=  leng4
+#  coeff$leng6 =  leng6
+#  coeff$ing4 =  ing4
+#  coeff$ing6   =  ing6 
+#  coeff$publica   =  publica 
+#  coeff$sexo =  sexo
+#  coeff$ciud_peq   =  ciud_peq 
+#  coeff$ciud_grande =  ciud_grande
+#  coeff$interaccion =  interaccion
+#  coeff$G = G
+#  coeff$sigma_y =  sigma_y
+#  coeff$sigma_g =  sigma_g
+# detach.jags()
+
+```
+
+
+
+```{r prediction}
+M = 4000
+# M = 10
+set.seed(2023)
+id_test_pred = sample(1:dim(test)[1],M)
+test_pred = test[id_test_pred,-c(2,3)]
+areas_test_pred = areas_test[id_test_pred,]
+X = cbind(rep(1,n),as.matrix(test_pred), as.matrix(areas_test_pred), as.matrix(test_pred$PLENG_6*(1-test_pred$GENERE_H)))
+
+C = confid.inter[,1]
+C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "ciud_peq", "ciud_grande", "G[1]",  "G[2]", "G[3]", "G[4]", "G[5]", "G[6]", "G[7]", "G[8]", "G[9]", "interaccion")]
+
+y_t <- rtruncnorm(M,0,100, X %*% C, confid.inter["sigma_y",3])
+per <- quantile(y_t, c(0.05, 0.95))
+```
+
+```{r comparison}
+# k = density(train$PMAT_4)
+# plot(k, type="l", lwd=2, col="red",
+#      main="Systolic Blood Pressure Before and After Treatment",
+#      xlab = "Systolic Blood Pressure (mmHg)",
+#      ylab = "Frequency", yaxt="n",
+#      xlim = c(0, 100), density = TRUE)
+# hist(y_t, add = TRUE, density = TRUE)
+# polygon(c(110,x,175),c(0,y2,0), col="firebrick3",
+#      border = "black")
+# polygon(c(117,x,175),c(0,y1,0), col="dodgerblue4",
+#      border = "black")
+# ylab=c(seq(from=0, to=175, by=25))
+# y=c(seq(from=0, to=0.05, length.out = 8))
+# axis(2,at=y,labels=ylab, las=1)
+# text(x = 120, y = 0.045, "- Pre-Treatment BP", col = "dodgerblue4", cex = 0.9)
+# text(x = 120, y = 0.04, " - Post-Treatment BP", col = "firebrick3", cex = 0.9)
+# points(109, 0.0445, pch = 15, col = "dodgerblue4")
+# points(109, 0.0395, pch = 15, col = "firebrick3")
+```
+
+Using Truncated Noemal 0-100
+Blue predicted, Red Dataset
+
+```{r}
+
+
+ggplot() +
+  geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density..), colour="royalblue3", fill="royalblue3",binwidth=3) +
+  geom_density(data=train, aes(x = PMAT_4), color = "red") +
+  ggtitle("Comparision between predictive posterior and PMAT_6 distribution", ) + 
+  ylab("Density") +
+  xlab("Nota") 
+  
+```
+
+
+
+
+
+
+
+
+
+## Conjunto de modelos 2
+
+### Presentacion de los modelos 2
+### Justificación e interpretación de los modelos 2
+### Validación de los modelos 2
+
+
+\newpage
+# Implementación del modelo
+
+\newpage
+# Conclusions
+
+
+
+\newpage
+# Apéndice
+## Código R
+## Tablas parámetros estimados
+\newpage
+# Referencias
