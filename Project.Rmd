@@ -75,8 +75,6 @@ El sesgo de género está presente en numerosos ámbitos de nuestra vida y se ap
 \
 Parece ser que aunque no hay una evidente brecha de género en el comienzo de los estudios primarios, el sesgo de género comienza a aparecer de forma clara a lo largo del proceso educativo, agudizándose en las últimas etapas de la educación obligatoria y evidenciándose de forma clara en la educación universitaria.
 
-...
-
 ## Descripción del problema
 
 Con el objetivo de evaluar la capacidad y el nivel de competencia en las diferentes áreas del conocimiento que tiene el alumnado de Cataluña, el Departament d’Educació de la Generalitat de Cataluña realiza una prueba de competencias y conocimientos básicos en las áreas lingüísticas, matemáticas y científico-tecnológicas en los últimos cursos de la educación primaria y secundaria.
@@ -99,7 +97,7 @@ Si ampliamos los datos y vemos la tabla de resultados para un mismo individuo en
 
 # Descripción de la base de datos
 
-La base de datos que hemos utilizado en este trabajo procede del catálogo de datos en abierto que proporciona la Generalitat de Catalunya en su página web. **IS a merge between QUARTZ and SISE on common id of the student.** Se puede acceder a la base de datos completa en el siguiente enlace:
+La base de datos utilizada es una mezcla de los datos ofrecidos para cuarto curso de ESO y los datos que se ofrecen para sexto curso de primaria. La razón de realizar la fusión de las dos tablas es poder evaluar la evolución de una misma persona desde el final de la educación primaria hasta el final de la educación secundaria. Se puede acceder a la base de datos completa en el siguiente enlace:
 \
 [Avaluació de quart d’Educació Secundària Obligatòria | Dades obertes de Catalunya](https://analisi.transparenciacatalunya.cat/Educaci-/Avaluaci-de-quart-d-Educaci-Secund-ria-Obligat-ria/59vm-wwq7)
 \
@@ -107,9 +105,8 @@ El dataset contiene los resultados obtenidos por el alumnado de cuarto curso de 
 \
 Se incluye un código de alumno para poder hacer comparativas con los resultados obtenidos en sextos de primaria. Dado que el código solo está disponible a partir del año 2016 se utilizarán únicamente los datos del alunado a partir de este año.
 \
-La base de datos ha sido actualizada el 20 de octubre de 2022
-\
-**We have 46384 students**
+La base de datos ha sido actualizada el 20 de octubre de 2022 y contiene los datos de 46384 estudiantes.
+
 
 
 ## Definición de las variables utilizadas
@@ -133,7 +130,7 @@ Base de dades
 
 ## Análisis exploratorio de los datos
 
-We start by looking at our dataset, the students are evenly spread among boys and girls. Their distribution in the areas is the following.
+En el análisis inicial de los datos podemos ver que la distribución de hombres y mujeres es uniforme con una proporción de 50,1% niños y 49,9% niñasen. La distribución de alumnos por áreas es la siguiente.
 
 ```{r his_area, out.width="90%", warning=FALSE, message=FALSE, fig.align='center'}
 area = alumni$AREA_TERRITORIAL
@@ -146,7 +143,7 @@ ggplot(data.frame(area), aes(x=area)) +
   xlab("Àrea")
 ```
 
-Analyzing then the division in city we find that most of them lives in medium or big cities.
+Según el tamaño de la población los datos de los que disponemos se concentran en individuos de ciudades de tamaño medio o grande.
 
 ```{r hist_ciudad, out.width="60%", warning=FALSE, message=FALSE, fig.align='center'}
 ciudad = factor(alumni$HÀBITAT, levels = c("Fins a 10000", "De 10001 a 100000", "Més de 100000"))
@@ -159,7 +156,7 @@ ggplot(data.frame(ciudad), aes(x=ciudad)) +
   xlab("Habitàt")
 ```
 
-We now look at the grade obtained in the exam of english, lenguage and math in the Sisè and Quart exam. The grades are divided between boys and girls. From the plot we suppose that boys tend to have lower grades in english and lenguage while obtain better result in math with respect to girls.
+<!-- We now look at the grade obtained in the exam of english, lenguage and math in the Sisè and Quart exam. The grades are divided between boys and girls. From the plot we suppose that boys tend to have lower grades in english and lenguage while obtain better result in math with respect to girls. -->
 
 ```{r boxplot_sise, out.width="80%", warning=FALSE, message=FALSE, fig.align='center'}
 set.seed(1234)
@@ -186,7 +183,8 @@ ggplot(data = df2, aes(x=GENERE,y=value, fill=GENERE)) +
 ```
 
 
-We then look at the data in pairs. As espected the data are almost linearly distributed with low variability when comparing the same subject among the years, this means that students who where good in a subject in the Sisè exam were good also in the Quart exam and the opposite. In the other comparison the variability is greater. We also point out the distribution of frequency in the groups by gender, particularly in math where the difference between male and female is more evident.
+En el siguiente gráfico podemos ver las diferencias entre las calificaciones en matemáticas, inglés y lengua de cada sexo dependiendo del nivel educativo. Si comparamos la misma asignatura en los dos cursos los datos muestran una distribución casi lineal y con poca variabilidad, lo cual nos hace pensar que el alumnado que obtiene buenos resultados en sexto de primaria también obtienen buenos resultados al acabar la secundaria, como cabría esperar.
+También cabe destacar la distribución de las frecuencias por género, en especial en el caso de matemáticas donde parece observarse una diferencia más evidente entre chicos y chicas.
 
 ```{r ggpairs_sise, out.width="90%", fig.align='center', cache=TRUE}
 keep = c("PMAT_4",   "PMAT_6",  "PLENG_4",   "PLENG_6",   "PANG_4", "PANG_6",  "GENERE")
@@ -218,18 +216,23 @@ ggpairs(
 
 ### Presentacion del modelo
 
-We buid the following model
+In order to identify result which differ from the average behaviour in the result of the students in the Math exam of Quart we  use a covariates the differnece of the grades from the mean of each exam.
+\
+So $ MAT_4 = MAT_4 - mean(MAT_4) $ and the same fot the other variables
+
+
+We build the following model
 
 $$y_i \sim N( b_0 + mat_4*x^1_i + leng_4 * x^2_i + leng_6 * x^3_i + ing_4*x^4_i + ing^6*x^5_i  + \ publica*x^6_i $$ 
 $$+ \ ciudPeq*x^7_i + ciudGrande*x^8_i + sexo*x^9_i + interaccion*x^3_i*x^9_i + G[area[i]], tau_y)$$
 
-We suppose the coefficient having the following distribution.
+We suppose the coefficient having the following distribution. We choose Standard normal distribution since the variableas are bias from the mean of each exam.
 
 $$ b_0 \sim  N(0, 1) $$ 
-$$ mat_4 \sim N(1, 1)   $$
-$$ leng_4 \sim N(1, 1) $$
-$$ leng_6 \sim N(1, 1) $$
-$$ ing_4 \sim N(1, 1) $$
+$$ mat_4 \sim N(0, 1)   $$
+$$ leng_4 \sim N(0, 1) $$
+$$ leng_6 \sim N(0, 1) $$
+$$ ing_4 \sim N(0, 1) $$
 $$ ing_6 \sim N(0, 1) $$
 $$ publica \sim N(0, 1) $$
 $$ ciudPeq \sim N(0, 1) $$
@@ -250,6 +253,15 @@ areas = dummy_cols(data.frame(Area = alumni$AREA_TERRITORIAL), remove_first_dumm
 names(areas)=levels(alumni$AREA_TERRITORIAL)[-1]
 m=dim(areas)[2]
 
+m4 = mean(alumni$PMAT_4)
+
+alumni$PLENG_6 = alumni$PLENG_6 - mean(alumni$PLENG_6)  # Plen_6  = delta_pl_6
+alumni$PLENG_4 = alumni$PLENG_4 - mean(alumni$PLENG_4)  # Plen_6  = delta_pl_6
+alumni$PANG_6 = alumni$PANG_6 - mean(alumni$PANG_6)  # Plen_6  = delta_pa_6
+alumni$PANG_4 = alumni$PANG_4 - mean(alumni$PANG_4)  # Plen_6  = delta_pa_4
+alumni$PMAT_6 = alumni$PMAT_6 - mean(alumni$PMAT_6)  # Plen_6  = delta_pa_6
+alumni$PMAT_4 = alumni$PMAT_4 - mean(alumni$PMAT_4)  # Plen_6  = delta_pa_6
+
 n = 4000
 set.seed(1234)
 id_train = sample(1:length(alumni$PMAT_6), replace = F, size = n)
@@ -267,14 +279,14 @@ mod.alumni.1 <- "
 model {
 
  for (i in 1:n) {
-  y[i]~ dnorm(b0 + mat6*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + ciud_peq*x7[i] + ciud_grande*x8[i] + sexo*x9[i] + interaccion*x3[i]*x9[i] + sum(G*geo[i,]), tau_y)
+  y[i]~ dnorm(b0 + mat6*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + ciud_peq*x7[i] + ciud_grande*x8[i] + sexo*x9[i] + interaccion*x2[i]*x9[i] + sum(G*geo[i,]), tau_y)
  }
  
  b0 ~ dnorm(0, 1)
- mat6 ~ dnorm(1, 1)  
- leng4 ~ dnorm(1, 1)
- leng6 ~ dnorm(1, 1)
- ing4 ~ dnorm(1, 1)
+ mat6 ~ dnorm(0, 1)  
+ leng4 ~ dnorm(0, 1)
+ leng6 ~ dnorm(0, 1)
+ ing4 ~ dnorm(0, 1)
  ing6 ~ dnorm(0, 1)
  publica ~ dnorm(0, 1)
  ciud_peq ~ dnorm(0, 1)
@@ -322,20 +334,27 @@ par(mar = c(2, 2, 2, 2))
 traceplot(alumni.sim.1, mfrow = c(4,3), varname = parameters.1, col=c("black","red"), ask=F)
 ```
 
+```{r}
+print(alumni.sim.1, digits=2)
+```
+
+
+
 ```{r CI_param_1}
 output = alumni.sim.1
 significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
+print(significance)
 
 linea = which(rownames(output$BUGSoutput$summary)=="deviance")
-confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]
+confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]  # small, big, mean
 
 par(mfrow=c(1,1), mar = c(6, 3, 2, 1))
-plot(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16, axes = F, xlab="", ylab="", ylim = c(-1.5,11), main = "Intervalo de confianza del 95% para los coeficientes")
+plot(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16, axes = F, xlab="", ylab="", ylim = c(-3,11), main = "Intervalo de confianza del 95% para los coeficientes")
 segments(x0=1:length(confid.inter[,1]), y0 = confid.inter[,1], x1 = 1:length(confid.inter[,1]), y1 = confid.inter[,2], lty = 2)
 points(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16)
 box()
 axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter), las = 2)
-axis(2, -1:11, -1:11)
+axis(2, -3:11, -3:11)
 points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
 points(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16)
 abline(h=0, lty=2)
@@ -357,12 +376,12 @@ test_pred = test[id_test_pred,-c(2,3)]
 areas_test_pred = areas_test[id_test_pred,]
 X = cbind(rep(1,n),as.matrix(test_pred), as.matrix(areas_test_pred), as.matrix(test_pred$PLENG_6*(1-test_pred$GENERE_H)))
 
-C = confid.inter[,1]
+C = confid.inter[,3]
 C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "ciud_peq", "ciud_grande", "G[1]",  "G[2]", "G[3]", "G[4]", "G[5]", "G[6]", "G[7]", "G[8]", "G[9]", "interaccion")]
 
-y_t <- rtruncnorm(M,0,100, X %*% C, confid.inter["sigma_y",3])
-# y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3])
+y_t <- rtruncnorm(M, a = -m4 ,b = 100-m4, X %*% C, confid.inter["sigma_y",3]) + m4
 per <- quantile(y_t, c(0.05, 0.95))
+print(per)
 ```
 
 Using Truncated Noemal 0-100
@@ -371,34 +390,36 @@ Blue predicted, Red Dataset
 ```{r comparison}
 ggplot() +
   geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density..), colour="royalblue3", fill="royalblue3",binwidth=3) +
-  geom_density(data=train, aes(x = PMAT_4), color = "red") +
-  ggtitle("Comparision between predictive posterior and PMAT_6 distribution", ) + 
+  geom_density(data=train, aes(x = PMAT_4+m4), color = "red") +
+  ggtitle("Comparision between predictive posterior and PMAT_4 distribution", ) + 
   ylab("Density") +
   xlab("Nota") 
 ```
 
-## Modelo 2
+This is not the right way to validate, will fix this part in the next version
+
+Seem to be good but we remove the area effect
+
+
+## Modelo 2 sin areas territoriales, con interaccion sexo:lenguas
 
 ### Presentacion de los modelos 2
 ### Justificación e interpretación de los modelos 2
 ### Validación de los modelos 2
-
-
-## 2) Modelo sin areas territoriales, con interaccion sexo:lenguas
 
 ```{R}
 mod.alumni.2 <- "
 model {
 
  for (i in 1:n) {
-  y[i]~ dnorm(b0 + mat6*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + ciud_peq*x7[i] + ciud_grande*x8[i] + sexo*x9[i] + interaccion*x3[i]*x9[i], tau_y)
+  y[i]~ dnorm(b0 + mat6*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + ciud_peq*x7[i] + ciud_grande*x8[i] + sexo*x9[i] + interaccion*x2[i]*x9[i], tau_y)
  }
  
  b0 ~ dnorm(0, 1)
- mat6 ~ dnorm(1, 1)  
- leng4 ~ dnorm(1, 1)
- leng6 ~ dnorm(1, 1)
- ing4 ~ dnorm(1, 1)
+ mat6 ~ dnorm(0, 1)  
+ leng4 ~ dnorm(0, 1)
+ leng6 ~ dnorm(0, 1)
+ ing4 ~ dnorm(0, 1)
  ing6 ~ dnorm(0, 1)
  publica ~ dnorm(0, 1)
  ciud_peq ~ dnorm(0, 1)
@@ -431,7 +452,9 @@ initials.2=list(list(b0 = 3, mat6 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publ
 alumni.sim.2 <- jags(data.2, inits=initials.2, parameters.to.save=parameters.2, 
 		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
 		  model=textConnection(mod.alumni.2))
+```
 
+```{R}
 par(mar = c(2, 2, 2, 2))
 traceplot(alumni.sim.2, mfrow = c(4,3), varname = parameters.2, col=c("black","red"), ask=F)
 ```
@@ -452,42 +475,38 @@ linea = which(rownames(output$BUGSoutput$summary)=="deviance")
 confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]
 
 par(mfrow=c(1,1), mar = c(6, 3, 2, 1))
-plot(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16, axes = F, xlab="", ylab="", ylim = c(-1.5,11), main = "Intervalo de confianza del 95% para los coeficientes")
+plot(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16, axes = F, xlab="", ylab="", ylim = c(-3,11), main = "Intervalo de confianza del 95% para los coeficientes")
 segments(x0=1:length(confid.inter[,1]), y0 = confid.inter[,1], x1 = 1:length(confid.inter[,1]), y1 = confid.inter[,2], lty = 2)
 points(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16)
 box()
 axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter), las = 2)
-axis(2, -1:11, -1:11)
+axis(2, -3:11, -3:11)
 points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
 points(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16)
 abline(h=0, lty=2)
 ```
 
+Missing valdation
+
+Remove non significative covariates
 
 
 
-
-
-
-
-
-
-
-### 3) Modelo: quito "ciudad"
+## Modelo 3: quito "ciudad"
 
 ```{r}
 mod.alumni.3 <- "
 model {
 
  for (i in 1:n) {
-  y[i]~ dnorm(b0 + mat6*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + sexo*x9[i] + interaccion*x3[i]*x9[i], tau_y)
+  y[i]~ dnorm(b0 + mat6*x1[i] + leng4*x2[i] + leng6*x3[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + sexo*x9[i] + interaccion*x2[i]*x9[i], tau_y)
  }
  
  b0 ~ dnorm(0, 1)
- mat6 ~ dnorm(1, 1)  
- leng4 ~ dnorm(1, 1)
- leng6 ~ dnorm(1, 1)
- ing4 ~ dnorm(1, 1)
+ mat6 ~ dnorm(0, 1)  
+ leng4 ~ dnorm(0, 1)
+ leng6 ~ dnorm(0, 1)
+ ing4 ~ dnorm(0, 1)
  ing6 ~ dnorm(0, 1)
  publica ~ dnorm(0, 1)
  sexo ~ dnorm(0, 1)
@@ -518,7 +537,9 @@ initials.3=list(list(b0 = 3, mat6 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publ
 alumni.sim.3 <- jags(data.3, inits=initials.3, parameters.to.save=parameters.3, 
 		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
 		  model=textConnection(mod.alumni.3))
+```
 
+```{r}
 par(mar = c(2, 2, 2, 2))
 traceplot(alumni.sim.3, mfrow = c(4,3), varname = parameters.3, col=c("black","red"), ask=F)
 ```
@@ -538,12 +559,12 @@ linea = which(rownames(output$BUGSoutput$summary)=="deviance")
 confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]
 
 par(mfrow=c(1,1), mar = c(6, 3, 2, 1))
-plot(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16, axes = F, xlab="", ylab="", ylim = c(-1.5,11), main = "Intervalo de confianza del 95% para los coeficientes")
+plot(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16, axes = F, xlab="", ylab="", ylim = c(-3,11), main = "Intervalo de confianza del 95% para los coeficientes")
 segments(x0=1:length(confid.inter[,1]), y0 = confid.inter[,1], x1 = 1:length(confid.inter[,1]), y1 = confid.inter[,2], lty = 2)
 points(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16)
 box()
 axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter), las = 2)
-axis(2, -1:11, -1:11)
+axis(2, -3:11, -3:11)
 points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
 points(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16)
 abline(h=0, lty=2)
@@ -563,12 +584,14 @@ id_test_pred = sample(1:dim(test)[1],M)
 test_pred = test[id_test_pred,-c(2,3,10, 11)]
 X = cbind(rep(1,n),as.matrix(test_pred), as.matrix(test_pred$PLENG_6*(1-test_pred$GENERE_H)))
 
-C = confid.inter[,1]
+C = confid.inter[,3]
 C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "interaccion")]
 
-#y_t <- rtruncnorm(M,0,100, X %*% C, confid.inter["sigma_y",3])
-y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3])
+# y_t <- rtruncnorm(M,0,100, X %*% C, confid.inter["sigma_y",3])
+# y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3]) + m4
+y_t <- rtruncnorm(M, a = -m4 ,b = 100-m4, X %*% C, confid.inter["sigma_y",3]) + m4
 per <- quantile(y_t, c(0.05, 0.95))
+print(per)
 ```
 
 Using Truncated Noemal 0-100
@@ -577,101 +600,33 @@ Blue predicted, Red Dataset
 ```{r comparison_3}
 ggplot() +
   geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density..), colour="royalblue3", fill="royalblue3",binwidth=3) +
-  geom_density(data=train, aes(x = PMAT_4), color = "red") +
-  ggtitle("Comparision between predictive posterior and PMAT_6 distribution", ) + 
+  geom_density(data=train, aes(x = PMAT_4+m4), color = "red") +
+  ggtitle("Comparision between predictive posterior and PMAT_4 distribution", ) + 
   ylab("Density") +
   xlab("Nota") 
 ```
 
 
 
+\newpage
 
-
-
-
-
-
-## 5) Modelo: quito "leng6"
-
-We dont need this model since in model 3 all variable are significative
-
-```{R}
-mod.alumni.5 <- "
- model {
-
- for (i in 1:n) {
-  y[i]~ dnorm(b0 + mat6*x1[i] + leng4*x2[i] + ing4*x4[i] + ing6*x5[i] + publica*x6[i] + interaccion*x3[i]*x9[i], tau_y)
- }
- 
- b0 ~ dnorm(0, 1)
- mat6 ~ dnorm(1, 1)  
- leng4 ~ dnorm(1, 1)
- ing4 ~ dnorm(1, 1)
- ing6 ~ dnorm(0, 1)
- publica ~ dnorm(0, 1)
- interaccion ~ dnorm(0, 1)
-
- tau_y ~ dgamma(0.001, 0.001)
- sigma_y <- 1/sqrt(tau_y)
-
-}
-"
-
-Iter <- 5000
-Burn <- 400
-Chain <- 2
-Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
-
-data.5 <- with(train, list(y = PMAT_4, x1 = PMAT_6, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x9=GENERE_H, n = dim(train)[1]))
-
-parameters.5 <- c("b0", "mat6", "leng4", "ing4", "ing6", "publica", "interaccion", "sigma_y")
-
-initials.5=list(list(b0 = 3, mat6 = 1, leng4= 0.1, ing4=0, ing6=0, publica=0, interaccion=0,
-                   tau_y = 4),
-              list(b0 = 2, mat6 = 1.5, leng4= 0.3, ing4=1, ing6=1, publica=1, interaccion=1,
-                   tau_y = 2))
-```
-
-```{R cache=T}
-alumni.sim.5 <- jags(data.5, inits=initials.5, parameters.to.save=parameters.5, 
-		  n.iter=(Iter*Thin+Burn),n.burnin=Burn, n.thin=Thin, n.chains=Chain, 
-		  model=textConnection(mod.alumni.5))
-
-par(mar = c(2, 2, 2, 2))
-traceplot(alumni.sim.5, mfrow = c(4,2), varname = parameters.5, col=c("black","red"), ask=F)
-```
-
+**Quick explaination for us:**
 
 ```{r}
-output = alumni.sim.5
-
-significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
+print(alumni.sim.3, digits=2)
 ```
+The last model is the one that is chosen. From this model we can answer to our objective of the project:
 
-```{r}
-linea = which(rownames(output$BUGSoutput$summary)=="deviance")
-confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]
+**All this conclusion should be explained in terms of difference with the mean result since our covatiates refer to the difference with the mean**
 
-par(mfrow=c(1,1), mar = c(6, 3, 2, 1))
-plot(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16, axes = F, xlab="", ylab="", ylim = c(-1.5,11), main = "Intervalo de confianza del 95% para los coeficientes")
-segments(x0=1:length(confid.inter[,1]), y0 = confid.inter[,1], x1 = 1:length(confid.inter[,1]), y1 = confid.inter[,2], lty = 2)
-points(1:length(confid.inter[,1]), confid.inter[,3], col="grey", pch=16)
-box()
-axis(1, 1:length(rownames(confid.inter)), rownames(confid.inter), las = 2)
-axis(2, -1:11, -1:11)
-points(1:length(confid.inter[,1]), confid.inter[,2], col="red", pch=16)
-points(1:length(confid.inter[,1]), confid.inter[,1], col="blue", pch=16)
-abline(h=0, lty=2)
-```
+- 1 Is gender a relevant factor in the result of math?
 
+Yes it is, we have to do some test to confirm this but the coeff of sexo show that boys should get on average 2.52 point more than girls in the exam
 
+- 2 Is it true that girls are coherent in the grades of leng and math while boys tend to have the opposit behaviour?
 
-
-
-
-
-
-
+Yes, the coeff of leng4 show that for girls the result is the same for both leng and math. \ 
+While if for boys the interaction reduce this coefficient and gets negative (0.13 - 0.14 = 0.01) so for boys the result of math is inverse corelated with the result of leng.
 
 
 
