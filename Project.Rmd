@@ -67,6 +67,7 @@ library(ggplot2)
 library(fastDummies)
 library(R2jags)
 library(truncnorm)
+library(gridExtra)
 ```
 
 ```{r load}
@@ -190,7 +191,7 @@ Pasamos ahora a la nota obtenida en el examen de inglés, lengua y matemáticas 
 
 #########     Boxplot     #########
 set.seed(1234)
-df=alumni[sample(1:length(alumni$PMAT_6), replace = F, size = 4000), ]
+df=alumni[sample(1:length(alumni$PMAT_6), replace = FALSE, size = 4000), ]
 
 library(tidyverse)
 
@@ -298,7 +299,7 @@ alumni$PMAT_4 = alumni$PMAT_4 - mean(alumni$PMAT_4)
 
 n = 4000
 set.seed(1234)
-id_train = sample(1:length(alumni$PMAT_6), replace = F, size = n)
+id_train = sample(1:length(alumni$PMAT_6), replace = FALSE, size = n)
 train = alumni[id_train, ]
 test = alumni[-id_train, ]
 
@@ -413,8 +414,37 @@ abline(h=0, lty=2)
 print(alumni.sim.1, digits=2)
 ```
 
+```{r quantile_1}
+quant = quantile(alumni$PMAT_4+m4, c(0.25,0.5, 0.75))
+```
 
-Ahora validamos nuestro modelo usando los cuantiles 25%, 50% y 75% como estadísticas. Estos valores los obtenemos simulando nuestro modelo sobre un subconjunto del testset obtenido como complemento del conjunto de entrenamiento inicial. Nuevamente usamos $4 \ 000$ estudiantes.
+
+Ahora validamos nuestro modelo usando los cuantiles 25%, 50% y 75% como estadísticas. 
+
+De los datos disponibles para nosotros sabemos que el valor de estas estadísticas es $q_{0.25} =`r round(quant[1],2) `q_{0.5} =`r round(quant[2],2) ` q_{0.75} =`r round(quant[3],2) `$
+
+
+Simulemos ahora la distribución de estas estadísticas. Creamos $ 4 \ 000 $ distribuciones normales teniendo como media el valor obtenido al combinar una n-ésima simulación con un estudiante aleatorio del testset, y como varianza la varianza relativa a los coeficientes utilizados.
+De cada uno de estos generamos aleatoriamente $ 1 \ 000 $ puntos y en estos vectores calculamos los cuantiles requeridos. Luego mostramos los histogramas que representan las distribuciones obtenidas de esta manera.
+
+```{r attach_mod1}
+attach.jags(alumni.sim.1)
+ coeff = data.frame(b0)
+ coeff$mat6  =  mat6
+ coeff$leng4=  leng4
+ coeff$leng6 =  leng6
+ coeff$ing4 =  ing4
+ coeff$ing6   =  ing6
+ coeff$publica   =  publica
+ coeff$sexo =  sexo
+ coeff$ciud_peq   =  ciud_peq
+ coeff$ciud_grande =  ciud_grande
+ coeff$interaccion =  interaccion
+ coeff$G = G
+ coeff$sigma_y =  sigma_y
+ coeff$sigma_g =  sigma_g
+detach.jags()
+```
 
 
 ```{r prediction}
@@ -428,35 +458,65 @@ test_pred = test[id_test_pred,-c(2,3)]
 areas_test_pred = areas_test[id_test_pred,]
 X = cbind(rep(1,n),as.matrix(test_pred), as.matrix(areas_test_pred), as.matrix(test_pred$PLENG_4*(test_pred$GENERE_H)))
 
-C = confid.inter[,3]
-C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "ciud_peq", "ciud_grande", "G[1]",  "G[2]", "G[3]", "G[4]", "G[5]", "G[6]", "G[7]", "G[8]", "G[9]", "interaccion")]
+# C = confid.inter[,3]
+# C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "ciud_peq", "ciud_grande", "G[1]",  "G[2]", "G[3]", "G[4]", "G[5]", "G[6]", "G[7]", "G[8]", "G[9]", "interaccion")]
 
-y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3]) + m4
+C = as.matrix(coeff[2000 + 1:M, c(1:10,12,11)])
+
+Mu = rowSums(X * C)
+Sigma = coeff[1:M, 13]
+q_sim = NULL
+for (i in 1:4000){
+  y_t = (rnorm(1000, Mu[i], Sigma[i]) + m4)
+  q_sim = rbind(q_sim,quantile(y_t, c(0.25,0.5,0.75)))
+}
+
+q_sim = data.frame(q_sim)
+colnames(q_sim) = c("Q25", "Q50", "Q75")
+
+# q_5 = data.frame(qnorm(0.5, Mu, Sigma) + m4)
+# colnames(q_5) = "Val"
+# 
+# q_75 = data.frame(qnorm(0.75, Mu, Sigma) + m4)
+# colnames(q_75) = "Val"
 per <- quantile(y_t, c(0.25, 0.5, 0.75))
 ```
 
-```{r stat_comparison,  message=FALSE}
 
-#########     Stat comparison model 1     #########
 
-real <- quantile(train$PMAT_4+m4, c(0.25, 0.5, 0.75))
+```{r validation_mod1,  message=FALSE}
 
-ggplot() +
-  geom_histogram(data=train, aes(x = PMAT_4+m4, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Comparación entre la distribución PMAT_4 y el valor obtenido por las estadísticas", ) +
-  geom_vline(xintercept=per[1], linetype="dashed", color = "red", size = 1) +
-  geom_vline(xintercept=per[2], linetype="dashed", color = "red", size = 1) + 
-  geom_vline(xintercept=per[3], linetype="dashed", color = "red", size = 1) + 
-  geom_vline(xintercept=real[1], linetype="dashed", color = "blue", size = 0.5) +
-  geom_vline(xintercept=real[2], linetype="dashed", color = "blue", size = 0.5) + 
-  geom_vline(xintercept=real[3], linetype="dashed", color = "blue", size = 0.5) +
-  scale_fill_manual(name = "Legend", labels = c("histogram"), values = c("royalblue3"))+
-  guides(fill = guide_legend(override.aes = list(size=5))) +
+#########     Validation model 1     #########
+
+plot1 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q25, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,25", ) +
+  geom_vline(xintercept=quant[1], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
   ylab("Densidad") +
   xlab("Nota") 
+
+plot2 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q50, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,5", ) +
+  geom_vline(xintercept=quant[2], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
+  ylab("Densidad") +
+  xlab("Nota") 
+
+plot3 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q75, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,75", ) +
+  geom_vline(xintercept=quant[3], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
+  ylab("Densidad") +
+  xlab("Nota") 
+
+grid.arrange(plot1, plot2, plot3, ncol=3)
 ```
 
-Como puede verse, los tres estadísticos parecen estar bien dispuestos en la distribución de referencia, aunque se mantienen ligeramente por debajo de los valores reales.
+
+Como puede verse, los tres estadísticos parecen estar bien dispuestos en la distribución de referencia, aunque el quantile 0,25 se mantienen ligeramente por debajo de los valores reales.
 \
 Intentemos eliminar los efectos del servicio territorial para que nuestro modelo sea más interpretable.
 
@@ -571,7 +631,25 @@ abline(h=0, lty=2)
 
 Como en el caso anterior, analicemos las estadísticas relativas a los percentiles 25%, 50% y 75%.
 
-```{r prediction2}
+```{r attach_mod2}
+attach.jags(alumni.sim.2)
+ coeff2 = data.frame(b0)
+ coeff2$mat6  =  mat6
+ coeff2$leng4=  leng4
+ coeff2$leng6 =  leng6
+ coeff2$ing4 =  ing4
+ coeff2$ing6   =  ing6
+ coeff2$publica   =  publica
+ coeff2$sexo =  sexo
+ coeff2$ciud_peq   =  ciud_peq
+ coeff2$ciud_grande =  ciud_grande
+ coeff2$interaccion =  interaccion
+ coeff2$sigma_y =  sigma_y
+detach.jags()
+```
+
+
+```{r prediction_2}
 
 #########     Prediction model 2     #########
 
@@ -582,31 +660,55 @@ test_pred = test[id_test_pred,-c(2,3)]
 areas_test_pred = areas_test[id_test_pred,]
 X = cbind(rep(1,n),as.matrix(test_pred), as.matrix(test_pred$PLENG_4*(test_pred$GENERE_H)))
 
-C = confid.inter[,3]
-C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "ciud_peq", "ciud_grande", "interaccion")]
+C = as.matrix(coeff2[2000 + 1:M, 1:11])
 
-y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3]) + m4
-per <- quantile(y_t, c(0.25, 0.5, 0.75))
+Mu = rowSums(X * C)
+Sigma = coeff2[1:M, 12]
+q_sim = NULL
+for (i in 1:4000){
+  y_t = (rnorm(1000, Mu[i], Sigma[i]) + m4)
+  q_sim = rbind(q_sim,quantile(y_t, c(0.25,0.5,0.75)))
+}
+
+q_sim = data.frame(q_sim)
+colnames(q_sim) = c("Q25", "Q50", "Q75")
 ```
 
-```{r stat_comparison2,  message=FALSE}
 
-#########     Stat comparison model 2     #########
 
-real <- quantile(train$PMAT_4+m4, c(0.25, 0.5, 0.75))
+```{r validation_mod2,  message=FALSE}
 
-ggplot() +
-  geom_histogram(data=train, aes(x = PMAT_4+m4, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Comparación entre la distribución PMAT_4 y el valor obtenido por las estadísticas", ) +
-  geom_vline(xintercept=per[1], linetype="dashed", color = "red", size = 1) +
-  geom_vline(xintercept=per[2], linetype="dashed", color = "red", size = 1) + 
-  geom_vline(xintercept=per[3], linetype="dashed", color = "red", size = 1) + 
-  geom_vline(xintercept=real[1], linetype="dashed", color = "blue", size = 0.5) +
-  geom_vline(xintercept=real[2], linetype="dashed", color = "blue", size = 0.5) + 
-  geom_vline(xintercept=real[3], linetype="dashed", color = "blue", size = 0.5) + 
+#########     Validation model 2     #########
+
+plot1 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q25, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,25", ) +
+  geom_vline(xintercept=quant[1], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
   ylab("Densidad") +
   xlab("Nota") 
+
+plot2 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q50, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,5", ) +
+  geom_vline(xintercept=quant[2], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
+  ylab("Densidad") +
+  xlab("Nota") 
+
+plot3 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q75, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,75", ) +
+  geom_vline(xintercept=quant[3], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
+  ylab("Densidad") +
+  xlab("Nota") 
+
+grid.arrange(plot1, plot2, plot3, ncol=3)
 ```
+
+
+
 El modelo resultante parece ser casi el mismo que el anterior y además en este caso las estadísticas obtenidas de la simulación con el testset tienen valores ligeramente inferiores a las estadísticas reales. También en este caso se procede a eliminar la covariable de ciudad para obtener un modelo más fácilmente interpretable.
 
 ## Modelo 3 se eliminan Servicio Territorial y Ciudad
@@ -734,10 +836,25 @@ abline(h=0, lty=2)
 
 También en este caso analizamos las estadísticas de los percentiles 25%, 50%, 75%. Nos referimos siempre a la distribución real de las notas obtenidas por los alumnos.
 
+```{r attach_mod3}
+attach.jags(alumni.sim.3)
+ coeff3 = data.frame(b0)
+ coeff3$mat6  =  mat6
+ coeff3$leng4=  leng4
+ coeff3$leng6 =  leng6
+ coeff3$ing4 =  ing4
+ coeff3$ing6   =  ing6
+ coeff3$publica   =  publica
+ coeff3$sexo =  sexo
+ coeff3$interaccion =  interaccion
+ coeff3$sigma_y =  sigma_y
+detach.jags()
+```
+
 
 ```{r prediction_3}
 
-#########     Prediciton model 3     #########
+#########     Prediction model 3     #########
 
 M = 4000
 set.seed(2023)
@@ -745,31 +862,51 @@ id_test_pred = sample(1:dim(test)[1],M)
 test_pred = test[id_test_pred,-c(2,3,10, 11)]
 X = cbind(rep(1,n),as.matrix(test_pred), as.matrix(test_pred$PLENG_4*(test_pred$GENERE_H)))
 
-C = confid.inter[,3]
-C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "interaccion")]
+C = as.matrix(coeff3[2000 + 1:M, 1:9])
 
+Mu = rowSums(X * C)
+Sigma = coeff3[1:M, 10]
+q_sim = NULL
+for (i in 1:4000){
+  y_t = (rnorm(1000, Mu[i], Sigma[i]) + m4)
+  q_sim = rbind(q_sim,quantile(y_t, c(0.25,0.5,0.75)))
+}
 
-y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3]) + m4
-per <- quantile(y_t, c(0.25, 0.5, 0.75))
+q_sim = data.frame(q_sim)
+colnames(q_sim) = c("Q25", "Q50", "Q75")
 ```
 
-```{r stat_comparison3, message=FALSE}
 
-#########     Stat comparison  model 3     #########
 
-real <- quantile(train$PMAT_4+m4, c(0.25, 0.5, 0.75))
+```{r validation_mod3,  message=FALSE}
 
-ggplot() +
-  geom_histogram(data=train, aes(x = PMAT_4+m4, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Comparación entre la distribución PMAT_4 y el valor obtenido por las estadísticas", ) +
-  geom_vline(xintercept=per[1], linetype="dashed", color = "red", size = 1) +
-  geom_vline(xintercept=per[2], linetype="dashed", color = "red", size = 1) + 
-  geom_vline(xintercept=per[3], linetype="dashed", color = "red", size = 1) + 
-  geom_vline(xintercept=real[1], linetype="dashed", color = "blue", size = 0.5) +
-  geom_vline(xintercept=real[2], linetype="dashed", color = "blue", size = 0.5) + 
-  geom_vline(xintercept=real[3], linetype="dashed", color = "blue", size = 0.5) + 
+#########     Validation model 3     #########
+
+plot1 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q25, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,25", ) +
+  geom_vline(xintercept=quant[1], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
   ylab("Densidad") +
   xlab("Nota") 
+
+plot2 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q50, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,5", ) +
+  geom_vline(xintercept=quant[2], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
+  ylab("Densidad") +
+  xlab("Nota") 
+
+plot3 = ggplot() +
+  geom_histogram(data=q_sim, aes(x = Q75, y=..density..), color = "grey", fill = "royalblue3") +
+  ggtitle("Quantile 0,75", ) +
+  geom_vline(xintercept=quant[3], linetype="dashed", color = "red", size = 0.5) +
+  xlim(c(0,120)) + 
+  ylab("Densidad") +
+  xlab("Nota") 
+
+grid.arrange(plot1, plot2, plot3, ncol=3)
 ```
 
 Las estadísticas siempre están a la izquierda de las estadísticas reales, pero aún consideramos que el modelo es satisfactorio y sin una pérdida significativa de descriptividad en comparación con el modelo inicial, que era mucho más pesado. 
@@ -941,7 +1078,6 @@ La distribución resultante es la siguiente.
 #########      Prediciton model 3 big    #########
 
 M = dim(test)[1]
-# M = 10
 set.seed(2023)
 id_test_pred = sample(1:dim(test)[1],M)
 test_pred = test[id_test_pred,-c(2,3,10, 11)]
@@ -950,11 +1086,8 @@ X = cbind(rep(1,n),as.matrix(test_pred), as.matrix(test_pred$PLENG_4*(test_pred$
 C = confid.inter[,3]
 C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "interaccion")]
 
-# y_t <- rtruncnorm(M,0,100, X %*% C, confid.inter["sigma_y",3])
 y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3]) + m4
-y_t <- rtruncnorm(M, a = -m4 ,b = 100-m4, X %*% C, confid.inter["sigma_y",3]) + m4
-per <- quantile(y_t, c(0.25, 0.5, 0.75))
-# print(per)
+# y_t <- rtruncnorm(M, a = -m4 ,b = 100-m4, X %*% C, confid.inter["sigma_y",3]) + m4
 ```
 
 
@@ -966,10 +1099,28 @@ per <- quantile(y_t, c(0.25, 0.5, 0.75))
 ggplot() +
   geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density..), colour="royalblue3", fill="royalblue3",binwidth=1) +
   geom_density(data=train, aes(x = PMAT_4+m4), color = "red") +
-  ggtitle("Comparision between predictive posterior and PMAT_4 distribution", ) + 
-  ylab("Density") +
+  ggtitle("Comparación entre distribución predictiva posterior y PMAT_4", ) + 
+  ylab("Denisidad") +
   xlab("Nota") 
 ```
+
+
+Como podemos ver, la distribución es bastante descriptiva de los datos, pero muchas de las observaciones pronosticadas superan el límite de 100 puntos. Por lo tanto, decidimos usar una distribución normal truncada entre 0 y 100 con la misma media y varianza que se usaron para la predicción anterior para predecir los resultados de los estudiantes.
+
+
+```{r distribution3_big_trunc, message=FALSE}
+
+#########  Prevision 3 big truncated #########
+
+y_t <- rtruncnorm(M, a = -m4 ,b = 100-m4, X %*% C, confid.inter["sigma_y",3]) + m4
+ggplot() +
+  geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density..), colour="royalblue3", fill="royalblue3",binwidth=1) +
+  geom_density(data=train, aes(x = PMAT_4+m4), color = "red") +
+  ggtitle("Comparación entre la distribución posterior predictiva truncada y PMAT_4", ) + 
+  ylab("Densidad") +
+  xlab("Nota") 
+```
+
 
 Vemos que sigue bastante de cerca la distribución teórica, por lo que estamos satisfechos con este modelo.
 
@@ -979,25 +1130,22 @@ Vemos que sigue bastante de cerca la distribución teórica, por lo que estamos 
 
 # Conclusions
 
-El objetivo principal de nuestro trabajo era poder evaluar cuál es el resultado obtenido por un estudiante de Cataluña en la prueba de evaluación de competencia matemática de cuarto curso de ESO en función de diferentes variables que pudieran intervenir.
-\
-Nos interesaba especialmente ver si el sexo del estudiante influía o no de forma significativa en la puntuación final obtenida en dicha prueba ya que, de ser así, podríamos afirmar la existencia de un sesgo de género en la materia de matemáticas para la población estudiada.
-\
-Después de evaluar diferentes modelos y de descartar variables que pensábamos que podían influir en los resultados finales, hemos validado el último modelo como el que mejor explicaría nuestros datos y mejores predicciones podría ofrecer para estimar la puntuación de una persona en la prueba de competencia matemática de Cataluña.
-\
-Recordamos que toda esta conclusión debe ser explicada en términos de diferencia con el resultado medio ya que nuestros covariados se refieren a la diferencia con la media
+El objetivo principal de nuestro trabajo era poder evaluar cuál es el resultado obtenido por un estudiante de Cataluña en la prueba de evaluación de competencia matemática de cuarto curso de ESO en función de diferentes variables con ello se pretendía saber si existía una diferencia evidente en la puntuación esperada por el simple hecho de pertenecer a un determinado género, de ser así, podríamos afirmar la existencia de un sesgo de género en la materia de matemáticas para la población estudiada.
 
-* ¿Es el género un factor relevante en el resultado de matemáticas?
+Después de evaluar diferentes modelos y de descartar variables que inicialmente pensábamos que podían influir en los resultados finales, hemos validado el último modelo como el que mejor explicaría nuestros datos y mejores predicciones podría ofrecer para estimar la puntuación de una persona en la prueba de competencia matemática de Cataluña.
 
-Sí lo es, de hecho el coeficiente de sexo muestra que los niños deberían obtener un promedio de 2,5 puntos más que las niñas en el examen.
+Las puntuaciones se han evaluado como diferencias con respecto a la media y no como puntuaciones absolutas con lo cual la interpretación de los coeficientes se deberá realizar teniendo en cuenta esta circunstancia. Teniendo eso en cuesta procedemos dar respuesta a las preguntas con las que iniciábamos este trabajo:
 
-* ¿Es cierto que las chicas son coherentes en las notas de lenguas y matemáticas mientras que los chicos tienden a tener un comportamiento opuesto?
+•	¿Podemos considerar el género un factor relevante en el resultado de las pruebas de competencia matemática al acabar la educación secundaria?
 
-Sí, el coeficiente de leng4 muestra que para las niñas el resultado de lenguas influencia positivamente el de matemáticas.
-Mientras que para los niños la interacción reduce este coeficiente y se vuelve negativo (0.11 - 0.18 = -0.07), por lo que el resultado de matemáticas está inversamente correlacionado con el resultado de lenguas.
+Pensamos que dados los resultados podríamos considerar que sí que sería un factor relevante. Sería interesante realizar alguna otro análisis para confirmar esta creencia pero el coeficiente de sexo muestra que los niños obtendrían un promedio de 2,52 puntos más que las niñas en el esta prueba.
+
+•	¿Es cierto que las chicas no demuestran una habilidad más especial en determinados campos mientras que los chicos demuestran mejor competencia en matemáticas que en lenguas?
+
+Pensamos que la respuesta a esta pregunta es que sí. El coeficiente de leng4 muestra que para las niñas la puntuación obtenida en matemáticas sería similar a la obtenida en lenguas mientras que para los niños la interacción reduce este coeficiente y se vuelve negativo (0.11 - 0.18 = -0.07), así que podríamos decir que para los niños el resultado de las matemáticas está inversamente correlacionado con el resultado de la lengua y que niños que no tienen buena competencia en materia lingüística sí que la tienen en materia matemática.
 
 Entonces en nuestra opinion para aumentar la tendencia de las chicas a estudiar asignaturas científicas para luego matricularse en carreras STEM, en primer lugar es importante fomentar una cultura de igualdad de género en las escuelas desde temprana edad. Esto puede lograrse a través de campañas educativas, programas de mentoría y liderazgo femenino, y la inclusión de más mujeres en los cuerpos docentes y de investigación.
-\
+
 Además, es esencial romper los estereotipos de género asociados a estos campos. Esto incluye mostrar a las jóvenes ejemplos de mujeres en posiciones de liderazgo en campos científicos, asegurando que los materiales educativos y las actividades extracurriculares promuevan una representación equilibrada de hombres y mujeres en carreras científicas.
 
 
