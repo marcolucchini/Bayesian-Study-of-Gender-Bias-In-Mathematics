@@ -1045,7 +1045,10 @@ abline(h=0, lty=2)
 
 
 Los valores numéricos de los coeficientes y todos los rangos se pueden ver en la tabla de coeficientes del anexo.
-Aquí presentamos un análisis de los valores medios obtenidos de la distribución de los coeficientes:
+
+Las puntuaciones se han evaluado como diferencias con respecto a la media y no como puntuaciones absolutas con lo cual la interpretación de los coeficientes se deberá realizar teniendo en cuenta esta circunstancia. Teniendo eso en cuesta procedemos dar respuesta a las preguntas con las que iniciábamos este trabajo:
+
+Aquí presentamos el análisis de los valores medios obtenidos de la distribución de los coeficientes:
 
 * $\beta_0 = `r round(alumni.sim.3_big$BUGSoutput$summary[1,1],2)`$: El valor $\beta_0$ es negativo, así que supongamos que un estudiante promedio (covariables numéricas = 0), mujer, en una escuela privada obtendrá una calificación más baja que el promedio en el examen mat4.
 
@@ -1128,13 +1131,11 @@ Vemos que sigue bastante de cerca la distribución teórica, por lo que estamos 
 
 \newpage
 
-# Conclusions
+# Conclusiones
 
 El objetivo principal de nuestro trabajo era poder evaluar cuál es el resultado obtenido por un estudiante de Cataluña en la prueba de evaluación de competencia matemática de cuarto curso de ESO en función de diferentes variables con ello se pretendía saber si existía una diferencia evidente en la puntuación esperada por el simple hecho de pertenecer a un determinado género, de ser así, podríamos afirmar la existencia de un sesgo de género en la materia de matemáticas para la población estudiada.
 
 Después de evaluar diferentes modelos y de descartar variables que inicialmente pensábamos que podían influir en los resultados finales, hemos validado el último modelo como el que mejor explicaría nuestros datos y mejores predicciones podría ofrecer para estimar la puntuación de una persona en la prueba de competencia matemática de Cataluña.
-
-Las puntuaciones se han evaluado como diferencias con respecto a la media y no como puntuaciones absolutas con lo cual la interpretación de los coeficientes se deberá realizar teniendo en cuenta esta circunstancia. Teniendo eso en cuesta procedemos dar respuesta a las preguntas con las que iniciábamos este trabajo:
 
 •	¿Podemos considerar el género un factor relevante en el resultado de las pruebas de competencia matemática al acabar la educación secundaria?
 
@@ -1144,7 +1145,7 @@ Pensamos que dados los resultados podríamos considerar que sí que sería un fa
 
 Pensamos que la respuesta a esta pregunta es que sí. El coeficiente de leng4 muestra que para las niñas la puntuación obtenida en matemáticas sería similar a la obtenida en lenguas mientras que para los niños la interacción reduce este coeficiente y se vuelve negativo (0.11 - 0.18 = -0.07), así que podríamos decir que para los niños el resultado de las matemáticas está inversamente correlacionado con el resultado de la lengua y que niños que no tienen buena competencia en materia lingüística sí que la tienen en materia matemática.
 
-Entonces en nuestra opinion para aumentar la tendencia de las chicas a estudiar asignaturas científicas para luego matricularse en carreras STEM, en primer lugar es importante fomentar una cultura de igualdad de género en las escuelas desde temprana edad. Esto puede lograrse a través de campañas educativas, programas de mentoría y liderazgo femenino, y la inclusión de más mujeres en los cuerpos docentes y de investigación.
+En nuestra opinion para aumentar la tendencia de las chicas a estudiar asignaturas científicas para luego matricularse en carreras STEM, en primer lugar es importante fomentar una cultura de igualdad de género en las escuelas desde temprana edad. Esto puede lograrse a través de campañas educativas, programas de mentoría y liderazgo femenino, y la inclusión de más mujeres en los cuerpos docentes y de investigación.
 
 Además, es esencial romper los estereotipos de género asociados a estos campos. Esto incluye mostrar a las jóvenes ejemplos de mujeres en posiciones de liderazgo en campos científicos, asegurando que los materiales educativos y las actividades extracurriculares promuevan una representación equilibrada de hombres y mujeres en carreras científicas.
 
