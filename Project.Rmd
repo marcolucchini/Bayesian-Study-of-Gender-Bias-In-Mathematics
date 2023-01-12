@@ -79,35 +79,34 @@ load("alumni.Rdata")
 # Introducción 
 
 Según los últimos datos del Ministerio de Educación y Formación Profesional del Gobierno de España la evolución del número de mujeres que se matriculan en estudios de grado de informática, matemáticas, estadística o física sigue siendo mucho menor que el de hombres a lo largo de los años. 
-\
+
 Además en algunas materias como matemáticas o estadística se puede apreciar que la diferencia entre hombres y mujeres matriculados va en aumento en los últimos años. 
 
 
 ![Fuente: Proyecto Alianza STEAM por el talento femenino. MEFP. Gobierno de España](images/img_1.png){width=90%}
-\
-Diversos estudios sugieren que este sesgo de género presente en el ámbito de la educación universitaria hace que se produzca también un sesgo en el ámbito laboral y que la poca presencia de mujeres en el estudios relacionados con las matemáticas repercuta directament en diferencias salariales importantes ya que son las profesiones relacionadas con las materias del ámbito STEAM las que mejores salidas profesionales tienen.
-\
-Pensamos que una de las posibles diferencias en la elección de estudios superiores relacionados con las matemáticas se podría deber a una diferencia importante en el rendimiento académico de esta materia en las etapas escolares previas y más concretamente en las etapas de escolarización obligatoria: primaria y secundaria obligatoria.
 
+Diversos estudios sugieren que este sesgo de género presente en el ámbito de la educación universitaria hace que se produzca también un sesgo en el ámbito laboral y que la poca presencia de mujeres en el estudios relacionados con las matemáticas repercuta directamente en diferencias salariales importantes ya que son las profesiones relacionadas con las materias del ámbito STEAM las que mejores salidas profesionales tienen.
+
+Pensamos que una de las posibles diferencias en la elección de estudios superiores relacionados con las matemáticas se podría deber a una diferencia importante en el rendimiento académico de esta materia en las etapas escolares previas y más concretamente en las etapas de escolarización obligatoria: primaria y secundaria obligatoria. 
 
 
 ## Descripción del problema
 
 Con el objetivo de evaluar la capacidad y el nivel de competencia en las diferentes áreas del conocimiento que tiene el alumnado de Cataluña, el Departament d’Educació de la Generalitat de Cataluña realiza una prueba de competencias y conocimientos básicos en las áreas lingüísticas, matemáticas y científico-tecnológicas en los últimos cursos de la educación primaria y secundaria.
-\
+
 Según el Departament se trata de una evaluación de carácter formativo y orientador que pueda servir tanto a los centros como al profesorado y al propio Departament para impulsar las mejoras en el sistema educativo catalán.
-\
-Nuestro problema se va a centrar en ver si las puntuaciones que obtiene el alumnado en Cataluña en las diferentes pruebas depende de variables como el sexo, la zona en la que viven o el tipo de escuela a la que asisten.
+
+Nuestro problema se va a centrar en ver si las puntuaciones que obtiene el alumnado de Cataluña en las diferentes pruebas depende de variables como el sexo, la zona en la que viven o el tipo de escuela a la que asisten.
 
 
 
 ## Objectivos del modelo
 
-Este trabajo tiene como objetivo principal ver si existe un sesgo de género en los resultados obtenidos en la competencia matemática con respecto al sexo y a las competencias humanísticas para ello intentaremos crear un modelo que relacione la puntuación obtenida en la competencia matemática con respecto al sexo, a las competencias lingüísticas e incluso con respecto al tipo de centro educativo o al tamaño de la población. 
-\
-Nuestro primer objetivo va a ser ver si realmente es cierto que “las chicas son más de letras y no tanto de ciencias”, de ser así en el sexo femenino no se dará una diferencia entre el rendimiento en humanidades y matemáticas, personas con bajo rendimiento en humanidades también lo tendrían en matemáticas, pero en cambio en el sexo masculino personas con bajo rendimiento en humanidades tendrían buenos resultados en matemáticas.
-\
-Si ampliamos los datos y vemos la tabla de resultados para un mismo individuo en sexto de primaria y cuarto de la podríamos establecer un segundo objetivo que sería ver si se mantienen los resultados en ambos sexos o si hay diferencias significativas en cuanto al rendimiento en el área de matemáticas al aumentar la edad.
+Este trabajo tiene como objetivo principal ver si existe un sesgo de género en los resultados obtenidos en la competencia matemática con respecto al sexo y a las competencias humanísticas. Para ello intentaremos crear un modelo que relacione la puntuación obtenida en la competencia matemática con respecto al sexo, a las competencias lingüísticas e incluso con respecto al tipo de centro educativo o al tamaño de la población.
+
+Nuestro primer objetivo será ver si realmente es cierto el estereotipo de que “las chicas son más de letras y no tanto de ciencias”, de ser así en el sexo femenino no se dará una diferencia entre el rendimiento en humanidades y matemáticas, personas con bajo rendimiento en humanidades también lo tendrían en matemáticas, pero en cambio en el sexo masculino personas con bajo rendimiento en humanidades tendrían buenos resultados en matemáticas.
+
+Si ampliamos los datos y vemos la tabla de resultados para un mismo individuo en sexto de primaria y cuarto de la ESO podríamos establecer un segundo objetivo que sería ver si se mantienen los resultados en ambos sexos o si hay diferencias significativas en cuanto al rendimiento en el área de matemáticas.
 
 
 \newpage
@@ -116,34 +115,30 @@ Si ampliamos los datos y vemos la tabla de resultados para un mismo individuo en
 
 La base de datos utilizada es una mezcla de los datos ofrecidos para cuarto curso de ESO y los datos que se ofrecen para sexto curso de primaria. La razón de realizar la fusión de las dos tablas es poder evaluar la evolución de una misma persona desde el final de la educación primaria hasta el final de la educación secundaria. Se puede acceder a la base de datos completa en los siguientes enlaces: 
 
-\
-
 [Avaluació de quart d’Educació Secundària Obligatòria | Dades obertes de Catalunya](https://analisi.transparenciacatalunya.cat/Educaci-/Avaluaci-de-quart-d-Educaci-Secund-ria-Obligat-ria/59vm-wwq7)
 
 [Avaluació de sisè d'educació primària | Dades obertes de Catalunya](https://analisi.transparenciacatalunya.cat/Educaci-/Avaluaci-de-sis-d-educaci-prim-ria/rk5x-gny6)
 
-\
-
 Los ficheros de datos contienen los resultados obtenidos por el alumnado de cuarto curso de ESO y los datos que se ofrecen para sexto curso de primaria en la evaluación de competencias básicas desde el año 2012. Las bases de datos han sido actualizadas el 20 de octubre de 2022 y contienen los datos de 46384 estudiantes.
-\
-Dada la extensión de la base de datos y el deseo de estudiar la evolución de un mismo alumno en el tiempo se ha realizado una fusión de las dos tablas manteniendose sólo algunas variables que hemos considerado significativas para evaluar los objetivos propuestos.El código de alumno se ha utilizado para unir las dos tablas y poder hacer estas comparativas.
+
+Dada la extensión de la base de datos se ha realizado una fusión de las dos tablas manteniendose sólo algunas variables que hemos considerado significativas para evaluar los objetivos propuestos. El código de alumno se ha utilizado para unir las dos tablas y poder hacer diferentes comparativas.
 
 
 
 ## Definición de las variables utilizadas
 
-Base de dades 
+Base de datos
 
-| Nom de columna | Descripció | Tipus |
+| Nombre de columna | Descripción | Tipo |
 |--------------------|-----------------------------------------------|----------------|
-| PMAT_4 | Puntuació global ponderada de competència matemàtica en el examen de Quart | Nombre |
-| PMAT_6 | Puntuació global ponderada de competència matemàtica en el examen de Sisè | Nombre |
-| PLENG_4 | Puntuació global ponderada de la competència lingüística en llengua catalana y castellana en el examen de Quart | Nombre |
-| PLENG_6 | Puntuació global ponderada de la competència lingüística en llengua catalana y castellana en el examen de Sisè | Nombre |
-| PANG_4 | Puntuació global ponderada de la competència lingüística en llengua anglesa en el examen de Quart | Nombre |
-| PANG_6 | Puntuació global ponderada de la competència lingüística en llengua anglesa en el examen de Sisè | Nombre |
+| PMAT_4 | Puntuación global ponderada de competencia matemàtica en el examen de Quart | Número |
+| PMAT_6 | Puntuación global ponderada de competencia matemàtica en el examen de Sisè | Número |
+| PLENG_4 | Puntuación global ponderada de la competencia lingüística en llengua catalana y castellana en el examen de Quart | Número |
+| PLENG_6 | Puntuación global ponderada de la competencia lingüística en llengua catalana y castellana en el examen de Sisè | Número |
+| PANG_4 | Puntuación global ponderada de la competencia lingüística en llengua anglesa en el examen de Quart | Número |
+| PANG_6 | Puntuación global ponderada de la competencia lingüística en llengua anglesa en el examen de Sisè | Número |
 | GENERE | Gènere de l’alumne/a que es presenta a l’avaluació | Text Pla |
-| AREA_TERRITORIAL | Regió on es troba el centre de l’alumne/a que es presenta a l’avaluació | Text Pla |
+| AREA_TERRITORIAL | Región donde se encuentra el centro del alumno que se presenta a la evaluación | Text Pla |
 | NATURALESA | Determina si el centre de l’alumne/a és públic, privat o concertat | Text Pla |
 | HÀBITAT | Municipis per trams de població | Text Pla|
 
@@ -185,7 +180,7 @@ ggplot(data.frame(ciudad), aes(x=ciudad)) +
   xlab("Habitàt")
 ```
 
-Pasamos ahora a la nota obtenida en el examen de inglés, lengua y matemáticas en el examen de Sisè y Quart. Los grados se dividen entre niños y niñas. Del gráfico suponemos que los chicos tienden a tener peores notas en inglés y lengua mientras que obtienen mejores resultados en matemáticas con respecto a las chicas.
+Pasamos ahora a la nota obtenida en el examen de inglés, lengua y matemáticas en las pruebas de Sisè y Quart. Las notas se han separado entre niños y niñas. Del gráfico que se muestra a continuación podemos decir que los chicos tienden a tener peores notas en inglés y lengua mientras que obtienen mejores resultados en matemáticas con respecto a las chicas.
 
 ```{r boxplot_sise, out.width="80%", warning=FALSE, message=FALSE, fig.align='center'}
 
@@ -211,7 +206,7 @@ ggplot(data = df2, aes(x=GENERE,y=value, fill=GENERE)) +
 ```
 
 
-En el siguiente gráfico podemos ver las diferencias entre las calificaciones en matemáticas, inglés y lengua de cada sexo dependiendo del nivel educativo. Si comparamos la misma asignatura en los dos cursos los datos muestran una distribución casi lineal y con poca variabilidad, lo cual nos hace pensar que el alumnado que obtiene buenos resultados en sexto de primaria también obtienen buenos resultados al acabar la secundaria, como cabría esperar. También cabe destacar la distribución de las frecuencias por género, en especial en el caso de matemáticas donde parece observarse una diferencia más evidente entre chicos y chicas.
+En el siguiente gráfico podemos ver las diferencias entre las calificaciones en matemáticas, inglés y lengua de cada sexo dependiendo del nivel educativo. Si comparamos la misma asignatura en los dos cursos los datos muestran una distribución casi lineal y con poca variabilidad, lo cual nos hace pensar que el alumnado que obtiene buenos resultados en sexto de primaria también obtiene buenos resultados al acabar la secundaria, como cabría esperar. También cabe destacar la distribución de las frecuencias por género, en especial en el caso de matemáticas donde parece observarse una diferencia más evidente entre chicos y chicas.
 
 ```{r ggpairs_sise, out.width="90%", fig.align='center', cache=TRUE}
 
@@ -237,18 +232,17 @@ ggpairs(
 ```
 
 
-
 \newpage
 # Análisis bayesiano
 
 ## Modelo 1
 
 El objetivo de nuestro modelo será predecir la nota de un estudiante en el examen de competencia matemática de ultimo curso de secundaria basandose en los resultados obtenidos en todas las competencias en sexton de primaria y en las competencias de las materias de lenguas castellana, catalana e inglesa de cuarto de secundaria.
-\
+
 Dado que nuestro objetivo no es solo hacer una predicción de la nota sino si saber si el género va a marcar una diferencia en la nota obtenida estudiaremos no la nota absoluta sino la desviación de cada individuo con respecto a la media:
  $$ MAT_4 = MAT_4 - media(MAT_4) $$ 
 En el modelo se tienen también en cuenta las variables género del estudiante, servei territorial, tamaño de la ciudad al que pertenece y la interacción entre el género y las puntuaciones en las pruebas de lenguas. Pensamos que esta última covariable nos ayudará a explicar si el alumnado tiene rendimientos opuestos en las dos materias con respecto al rendimiento medio.
-\
+
 Este primer modelo es un modelo jerárquico respecto al servicio territorial del que se depende para agregar un efecto aleatorio debido al área. Suponemos que todas los servicios territoriales tienen una distribución normal de media 0 mientras que la varianza cambia para cada una. Consideramos, sin embargo, que los datos se obtienen a partir de una única distribución común a todos los servicios.
 
 ### Presentacion del modelo
@@ -256,7 +250,7 @@ Este primer modelo es un modelo jerárquico respecto al servicio territorial del
 El modelo utilizado es el siguiente.
 
 $$y_i \sim N( \beta_0 + mat_4*x^1_i + leng_4 * x^2_i + leng_6 * x^3_i + ing_4*x^4_i + ing^6*x^5_i  + \ publica*x^6_i $$ 
-$$+ \ ciudPeq*x^7_i + ciudGrande*x^8_i + sexo_h*x^9_i + interaccion*x^2_i*x^9_i + G[area[i]], tau_y)$$
+$$+ \ ciudPeq*x^7_i + ciudGrande*x^8_i + sexo_h*x^9_i + interaccion*x^2_i*x^9_i + G[area[i]], \sigma_y)$$
 
 Suponemos que los parámetros para cada variable tienen las siguientes distribuciones. En todos los casos elegimos la distribución normal estándar ya que las variables son un sesgo de la media de cada examen.
 
@@ -271,11 +265,11 @@ $$ ciudPeq \sim N(0, 1) $$
 $$ ciudGrande \sim N(0, 1) $$
 $$ sexo_h \sim N(0, 1) \ \ \ x^9 \ es \ 1 \ si \ es \ hombre$$
 $$ interaccion \sim N(0, 1) $$
-$$ tau_y \sim \Gamma(0.001, 0.001) $$
-$$ sigma_y = \frac{1}{\sqrt{tau_y}} $$
-$$ G_i \sim N(0, tau_g) $$
-$$ tau_g \sim \Gamma(0.001, 0.001) $$
-$$ sigma_g = \frac{1}{\sqrt{tau_g}} $$
+$$ \tau_y \sim \Gamma(0.001, 0.001) $$
+$$ \sigma_y = \frac{1}{\sqrt{\tau_y}} $$
+$$ G_i \sim N(0, \tau_g) $$
+$$ \tau_g \sim \Gamma(0.001, 0.001) $$
+$$ \sigma_g = \frac{1}{\sqrt{\tau_g}} $$
 
 
 ```{r prep_mod1}
@@ -364,7 +358,7 @@ initials.1=list(list(b0 = 3, mat6 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publ
 ### Simulación de modelo
 
 Ejecutamos nuestro modelo en un conjunto de datos de prueba de 4 000 estudiantes usando el paquete JAGS de R para realizar simulaciones. Se utilizan algoritmos de MCMC ya que realizar el problema analíticamente sería casi imposible.
-\
+
 Usando dos cadenas diferentes de 5000 iteraciones de largo y eliminando las primeras 400 iteraciones, obtenemos los siguientes resultados. Como puede verse en los siguientes gráficos las dos cadenas convergen y, por lo tanto, consideramos que el modelo es estable y que se pueden tener en cuenta los resultados como válidos.
 
 
@@ -421,11 +415,10 @@ quant = quantile(alumni$PMAT_4+m4, c(0.25,0.5, 0.75))
 
 Ahora validamos nuestro modelo usando los cuantiles 25%, 50% y 75% como estadísticas. 
 
-De los datos disponibles para nosotros sabemos que el valor de estas estadísticas es $q_{0.25} =`r round(quant[1],2) `q_{0.5} =`r round(quant[2],2) ` q_{0.75} =`r round(quant[3],2) `$
+De los datos disponibles para nosotros sabemos que el valor de estas estadísticas es $q_{0.25} =`r round(quant[1],2) ` \ q_{0.5} =`r round(quant[2],2) ` \ q_{0.75} =`r round(quant[3],2) `$
 
-
-Simulemos ahora la distribución de estas estadísticas. Creamos $ 4 \ 000 $ distribuciones normales teniendo como media el valor obtenido al combinar una n-ésima simulación con un estudiante aleatorio del testset, y como varianza la varianza relativa a los coeficientes utilizados.
-De cada uno de estos generamos aleatoriamente $ 1 \ 000 $ puntos y en estos vectores calculamos los cuantiles requeridos. Luego mostramos los histogramas que representan las distribuciones obtenidas de esta manera.
+Simulemos ahora la distribución de estas estadísticas. Creamos 4 000  distribuciones normales teniendo como media el valor obtenido al combinar una n-ésima simulación con un estudiante aleatorio del *testset*, y como varianza la varianza relativa a los coeficientes utilizados.
+De cada uno de estos generamos aleatoriamente 1 000 valores y con ellos calculamos los cuantiles requeridos. Luego mostramos los histogramas que representan las distribuciones obtenidas de esta manera.
 
 ```{r attach_mod1}
 attach.jags(alumni.sim.1)
@@ -490,7 +483,7 @@ per <- quantile(y_t, c(0.25, 0.5, 0.75))
 
 plot1 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q25, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,25", ) +
+  ggtitle("Cuantil 0,25", ) +
   geom_vline(xintercept=quant[1], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -498,7 +491,7 @@ plot1 = ggplot() +
 
 plot2 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q50, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,5", ) +
+  ggtitle("Cuantil 0,5", ) +
   geom_vline(xintercept=quant[2], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -506,7 +499,7 @@ plot2 = ggplot() +
 
 plot3 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q75, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,75", ) +
+  ggtitle("Cuantil 0,75", ) +
   geom_vline(xintercept=quant[3], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -517,7 +510,7 @@ grid.arrange(plot1, plot2, plot3, ncol=3)
 
 
 Como puede verse, los tres estadísticos parecen estar bien dispuestos en la distribución de referencia, aunque el quantile 0,25 se mantienen ligeramente por debajo de los valores reales.
-\
+
 Intentemos eliminar los efectos del servicio territorial para que nuestro modelo sea más interpretable.
 
 
@@ -612,7 +605,6 @@ print(alumni.sim.2, digits=2)
 output = alumni.sim.2
 
 significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
-# print(significance)
 
 linea = which(rownames(output$BUGSoutput$summary)=="deviance")
 confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]
@@ -682,7 +674,7 @@ colnames(q_sim) = c("Q25", "Q50", "Q75")
 
 plot1 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q25, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,25", ) +
+  ggtitle("Cuantil 0,25", ) +
   geom_vline(xintercept=quant[1], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -690,7 +682,7 @@ plot1 = ggplot() +
 
 plot2 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q50, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,5", ) +
+  ggtitle("Cuantil 0,5", ) +
   geom_vline(xintercept=quant[2], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -698,7 +690,7 @@ plot2 = ggplot() +
 
 plot3 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q75, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,75", ) +
+  ggtitle("Cuantil 0,75", ) +
   geom_vline(xintercept=quant[3], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -720,7 +712,7 @@ Reducimos aún más nuestro modelo manteniendo únicamente las calificaciones ob
 El modelo implementado es el siguiente.
 
 
-$$y_i \sim N( \beta_0 + mat_4*x^1_i + leng_4 * x^2_i + leng_6 * x^3_i + ing_4*x^4_i + ing^6*x^5_i  + \ publica*x^6_i + sexo_h*x^9_i + interaccion*x^2_i*x^9_i, tau_y)$$
+$$y_i \sim N( \beta_0 + mat_4*x^1_i + leng_4 * x^2_i + leng_6 * x^3_i + ing_4*x^4_i + ing^6*x^5_i  + \ publica*x^6_i + sexo_h*x^9_i + interaccion*x^2_i*x^9_i, \sigma_y)$$
 
 Suponemos que el coeficiente tiene la siguiente distribución. Elegimos la distribución normal estándar ya que las variables son un sesgo de la media de cada examen.
 
@@ -733,8 +725,8 @@ $$ ing_6 \sim N(0, 1) $$
 $$ publica \sim N(0, 1) $$
 $$ sexo_h \sim N(0, 1) \ \ \ x^9 \ es \ 1 \ si \ es \ hombre$$
 $$ interaccion \sim N(0, 1) $$
-$$ tau_y \sim \Gamma(0.001, 0.001) $$
-$$ sigma_y = \frac{1}{\sqrt{tau_y}} $$
+$$ \tau_y \sim \Gamma(0.001, 0.001) $$
+$$ \sigma_y = \frac{1}{\sqrt{\tau_y}} $$
 
 
 ```{r model_3}
@@ -768,7 +760,7 @@ model {
 Iter <- 5000
 Burn <- 400
 Chain <- 2
-Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+Thin <- 1 
 
 data.3 <- with(train, list(y = PMAT_4, x1 = PMAT_6, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x9=GENERE_H, n = dim(train)[1]))
 
@@ -816,7 +808,6 @@ print(alumni.sim.3, digits=2)
 
 output = alumni.sim.3
 significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
-# print(significance)
 
 linea = which(rownames(output$BUGSoutput$summary)=="deviance")
 confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]
@@ -884,7 +875,7 @@ colnames(q_sim) = c("Q25", "Q50", "Q75")
 
 plot1 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q25, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,25", ) +
+  ggtitle("Cuantil 0,25", ) +
   geom_vline(xintercept=quant[1], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -892,7 +883,7 @@ plot1 = ggplot() +
 
 plot2 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q50, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,5", ) +
+  ggtitle("Cuantil 0,5", ) +
   geom_vline(xintercept=quant[2], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -900,7 +891,7 @@ plot2 = ggplot() +
 
 plot3 = ggplot() +
   geom_histogram(data=q_sim, aes(x = Q75, y=..density..), color = "grey", fill = "royalblue3") +
-  ggtitle("Quantile 0,75", ) +
+  ggtitle("Cuantil 0,75", ) +
   geom_vline(xintercept=quant[3], linetype="dashed", color = "red", size = 0.5) +
   xlim(c(0,120)) + 
   ylab("Densidad") +
@@ -909,13 +900,11 @@ plot3 = ggplot() +
 grid.arrange(plot1, plot2, plot3, ncol=3)
 ```
 
-Las estadísticas siempre están a la izquierda de las estadísticas reales, pero aún consideramos que el modelo es satisfactorio y sin una pérdida significativa de descriptividad en comparación con el modelo inicial, que era mucho más pesado. 
-Comparando también los índices DIC vemos que los modelos tienen los siguientes valores mod_1 = `r round(alumni.sim.1$BUGSoutput$DIC,2)` , mod_2 = `r round(alumni.sim.2$BUGSoutput$DIC,2)` and mod_3 = `r round(alumni.sim.3$BUGSoutput$DIC,2)`. 
-\
+Los estadísticos siempre están a la izquierda de las estadísticas reales, pero aún consideramos que el modelo es satisfactorio y sin una pérdida significativa de descriptividad en comparación con el modelo inicial, que era mucho más pesado. 
+
+Comparando también los índices DIC vemos que los modelos tienen los siguientes valores $mod_1 = 30165.7$ , $mod_2 = 30161.74$ and $mod_3 = 30160.36$. 
+
 Recordamos que un índice DIC más bajo es mejor por lo que confirmamos la elección del modelo 3 como modelo para evaluar nuestro objetivo inicial. En el siguiente apartado procederemos al análisis en detalle de este modelo.
-
-
-
 
 \newpage 
 
@@ -987,7 +976,7 @@ model {
 Iter <- 5000
 Burn <- 400
 Chain <- 2
-Thin <- 1 #per eliminare l'effetto dell'autocorrelazione delle simulazioni
+Thin <- 1 
 
 data.3 <- with(train, list(y = PMAT_4, x1 = PMAT_6, x2=PLENG_4, x3=PLENG_6, x4=PANG_4, x5=PANG_6, x6=NATURALESA_Pública, x9=GENERE_H, n = dim(train)[1]))
 
@@ -999,10 +988,10 @@ initials.3=list(list(b0 = 3, mat6 = 1, leng4= 0.1, leng6=0, ing4=0, ing6=0, publ
                    tau_y = 2))
 ```
 
-Analicemos ahora el modelo 3 en detalle. Dado que es un modelo más ligero, podemos entrenarlo en una mayor parte de los estudiantes. Usamos un conjunto de entrenamiento esta vez compuesto por el 80% de los estudiantes (alrededor de $37 \  000$).
-\
+Analicemos ahora el modelo 3 en detalle. Dado que es un modelo más ligero, podemos entrenarlo en una mayor parte de los estudiantes. Usamos un conjunto de entrenamiento esta vez compuesto por el 80% de los estudiantes (alrededor de 37  000).
+
 También en este caso simulamos el modelo a través del paquete JAGS generando MCMCs. Al igual que en los modelos anteriores, aquí también convergen las dos cadenas de prueba
-\
+
 Los coeficientes resultantes de este modelo son siempre significativos. También notamos que la variabilidad de las distribuciones es menor gracias al mayor tamaño del conjunto de datos de entrenamiento.
 
 
@@ -1026,7 +1015,6 @@ traceplot(alumni.sim.3_big, mfrow = c(4,3), varname = parameters.3, col=c("black
 
 output = alumni.sim.3_big
 significance = !(output$BUGSoutput$summary[,3]<0 & output$BUGSoutput$summary[,7]>0)
-# print(significance)
 
 linea = which(rownames(output$BUGSoutput$summary)=="deviance")
 confid.inter = output$BUGSoutput$summary[-linea,c(3,7,1)]
@@ -1046,7 +1034,7 @@ abline(h=0, lty=2)
 
 Los valores numéricos de los coeficientes y todos los rangos se pueden ver en la tabla de coeficientes del anexo.
 
-Las puntuaciones se han evaluado como diferencias con respecto a la media y no como puntuaciones absolutas con lo cual la interpretación de los coeficientes se deberá realizar teniendo en cuenta esta circunstancia. Teniendo eso en cuesta procedemos dar respuesta a las preguntas con las que iniciábamos este trabajo:
+Las puntuaciones se han evaluado como diferencias con respecto a la media y no como puntuaciones absolutas con lo cual la interpretación de los coeficientes se deberá realizar teniendo en cuenta esta circunstancia. 
 
 Aquí presentamos el análisis de los valores medios obtenidos de la distribución de los coeficientes:
 
@@ -1068,11 +1056,11 @@ Aquí presentamos el análisis de los valores medios obtenidos de la distribuci�
 
 * $sexo = `r round(alumni.sim.3_big$BUGSoutput$summary[10,1],2)`$: También en este caso la variable es binaria por lo que observamos que un alumno de sexo másculino obtendrá un resultado medio aproximadamente 2,5 puntos superior al de una chica.
 
-* $sigma_y = `r round(alumni.sim.3_big$BUGSoutput$summary[11,1],2)`$: El valor estimado para la varianza de la distribución es bajo y parece ser un valor probable.
+* $\sigma_y = `r round(alumni.sim.3_big$BUGSoutput$summary[11,1],2)`$: El valor estimado para la varianza de la distribución es bajo y parece ser un valor probable.
 
 
 Ahora usamos el modelo obtenido para simular los resultados obtenidos en el conjunto de prueba. Usaermos los coeficientes promedio para la simulación y extraeremos un valor aleatorio de cada distribución generada para un estudiante.
-\
+
 La distribución resultante es la siguiente.
 
 
@@ -1090,7 +1078,6 @@ C = confid.inter[,3]
 C = C[c("b0", "mat6", "leng4", "leng6", "ing4", "ing6", "publica", "sexo", "interaccion")]
 
 y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3]) + m4
-# y_t <- rtruncnorm(M, a = -m4 ,b = 100-m4, X %*% C, confid.inter["sigma_y",3]) + m4
 ```
 
 
@@ -1136,6 +1123,8 @@ Vemos que sigue bastante de cerca la distribución teórica, por lo que estamos 
 El objetivo principal de nuestro trabajo era poder evaluar cuál es el resultado obtenido por un estudiante de Cataluña en la prueba de evaluación de competencia matemática de cuarto curso de ESO en función de diferentes variables con ello se pretendía saber si existía una diferencia evidente en la puntuación esperada por el simple hecho de pertenecer a un determinado género, de ser así, podríamos afirmar la existencia de un sesgo de género en la materia de matemáticas para la población estudiada.
 
 Después de evaluar diferentes modelos y de descartar variables que inicialmente pensábamos que podían influir en los resultados finales, hemos validado el último modelo como el que mejor explicaría nuestros datos y mejores predicciones podría ofrecer para estimar la puntuación de una persona en la prueba de competencia matemática de Cataluña.
+
+Teniendo eso en cuesta procedemos dar respuesta a las preguntas con las que iniciábamos este trabajo:
 
 •	¿Podemos considerar el género un factor relevante en el resultado de las pruebas de competencia matemática al acabar la educación secundaria?
 
