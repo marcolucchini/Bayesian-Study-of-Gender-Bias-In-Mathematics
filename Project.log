@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.27)  15 JAN 2023 19:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.27)  15 JAN 2023 20:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -786,87 +786,87 @@ LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
 LaTeX Font Warning: Font shape `T1/lmtt/bx/it' in size <10> not available
 (Font)              Font shape `T1/lmtt/b/sl' tried instead on input line 764.
 
-LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 873.
+LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 876.
 (/Users/marco/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [18]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [19]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [20]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [21]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [22]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [23]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [24]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [25]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [26]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [27]
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1359
+Underfull \vbox (badness 10000) detected at line 1362
  []
 
 [28] [29] [30] [31] (./Project.aux)
@@ -882,7 +882,7 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 8191
  72i,8n,79p,451b,512s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}</Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtko10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtti10.pfb>
-Output written on Project.pdf (33 pages, 4936720 bytes).
+Output written on Project.pdf (33 pages, 4936716 bytes).
 PDF statistics:
  549 PDF objects out of 1000 (max. 8388607)
  435 compressed objects within 5 object streams

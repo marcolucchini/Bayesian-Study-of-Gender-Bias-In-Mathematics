@@ -194,7 +194,8 @@ ggplot(data = df2, aes(x=GENERE,y=value, fill=GENERE)) +
   geom_boxplot()+
   labs(title = 'Comparación de resultados por género',
        y='Notas',x='') +
-  facet_wrap(~Test,nrow = 1)
+  facet_wrap(~Test,nrow = 1) +
+  scale_fill_manual(values = c("salmon", "royalblue3"))
 
 ```
 
@@ -217,7 +218,9 @@ ggpairs(
   upper = list(continuous = wrap("density", alpha = 0.5), combo = "box_no_facet"),
   lower = list(continuous = wrap("points", alpha = 0.3), combo = wrap("dot_no_facet", alpha = 0.4)),
   title = "Comparación de los resultados entre individuos"
-)
+) +
+   scale_fill_manual(values = c("salmon", "royalblue3"))+
+  scale_colour_manual(values = c("salmon", "royalblue3"))
 ```
 
 
