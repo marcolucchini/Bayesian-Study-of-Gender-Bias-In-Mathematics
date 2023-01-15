@@ -34,9 +34,9 @@ header-includes:
 \vspace{120mm}
 
 <left>
-![](Logo UPC.png){width="50%"}
+![](images/Logo UPC.png){width="50%"}
 </left> <right>
-![](Logo UB.png){width="50%"}
+![](images/Logo UB.png){width="50%"}
 </right> 
 
 \newpage
@@ -1005,7 +1005,7 @@ Dados los resultados, podemos considerar que, efectivamente, se trata de un fact
 
 •	¿Es cierto que las chicas no demuestran una habilidad más especial en determinados campos mientras que los chicos demuestran mejor competencia en matemáticas que en lenguas?
 
-La respuesta a esta pregunta sería de nuevo afirmativa. El coeficiente de leng4 muestra que para las niñas la puntuación obtenida en matemáticas sería similar a la obtenida en lenguas, mientras que para los niños la interacción reduce este coeficiente y se vuelve negativo (0.11 - 0.18 = -0.07). Por tanto, cabría afirmar que para los niños el resultado en matemáticas está inversamente correlacionado con el resultado en lenguas y que niños que no tienen buena competencia en materia lingüística sí que la tendrían en matemáticas.
+La respuesta a esta pregunta sería de nuevo afirmativa. El coeficiente de leng4 muestra que para las niñas la puntuación obtenida en matemáticas sería similar a la obtenida en lenguas, mientras que para los niños la interacción reduce este coeficiente y se vuelve negativo (0.12 - 0.18 = -0.06). Por tanto, cabría afirmar que para los niños el resultado en matemáticas está inversamente correlacionado con el resultado en lenguas y que niños que no tienen buena competencia en materia lingüística sí que la tendrían en matemáticas.
 \
 En definitiva, el sesgo de género es evidente en la materia de matemáticas y el rendimiento de las alumnas al finalizar la secundaria obligatoria es menor que el de los alumnos. Existen distintas hipótesis, que incluyen factores psicosociales, y que podrían explicar la razón de esta diferencia. Nosotros pensamos que para aumentar la tendencia de las chicas a estudiar asignaturas científicas, y más concretamente matemáticas, que las conduciría a matricularse en carreras STEAM, es importante fomentar la cultura de la igualdad de género en las escuelas desde edades tempranas. 
 
