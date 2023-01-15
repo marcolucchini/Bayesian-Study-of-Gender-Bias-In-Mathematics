@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.27)  15 JAN 2023 17:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.12.27)  15 JAN 2023 19:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -656,73 +656,73 @@ File: images/img_1.png Graphic file (type png)
 Package pdftex.def Info: images/img_1.png  used on input line 182.
 (pdftex.def)             Requested size: 422.77078pt x 308.39511pt.
 [1 <./images/img_1.png>] [2]
-Overfull \hbox (1.32318pt too wide) in paragraph at lines 297--297
+Overfull \hbox (1.32318pt too wide) in paragraph at lines 299--299
 []|\T1/lmr/m/n/10 AREA_TERRITORIAL|  
  []
 
 <Project_files/figure-latex/his_area-1.pdf, id=163, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/his_area-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/his_area-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/his_area-1.pdf  used on input line 315.
+Package pdftex.def Info: Project_files/figure-latex/his_area-1.pdf  used on input line 317.
 (pdftex.def)             Requested size: 422.7756pt x 292.6908pt.
 [3]
 <Project_files/figure-latex/hist_ciudad-1.pdf, id=173, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/hist_ciudad-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/hist_ciudad-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/hist_ciudad-1.pdf  used on input line 320.
+Package pdftex.def Info: Project_files/figure-latex/hist_ciudad-1.pdf  used on input line 322.
 (pdftex.def)             Requested size: 281.85518pt x 195.1305pt.
 <Project_files/figure-latex/boxplot_sise-1.pdf, id=174, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/boxplot_sise-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/boxplot_sise-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/boxplot_sise-1.pdf  used on input line 330.
+Package pdftex.def Info: Project_files/figure-latex/boxplot_sise-1.pdf  used on input line 332.
 (pdftex.def)             Requested size: 375.80452pt x 260.17235pt.
 [4 <./Project_files/figure-latex/his_area-1.pdf> <./Project_files/figure-latex/hist_ciudad-1.pdf>]
 <Project_files/figure-latex/ggpairs_sise-1.pdf, id=189, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/ggpairs_sise-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/ggpairs_sise-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/ggpairs_sise-1.pdf  used on input line 342.
+Package pdftex.def Info: Project_files/figure-latex/ggpairs_sise-1.pdf  used on input line 344.
 (pdftex.def)             Requested size: 422.7756pt x 292.6908pt.
 [5 <./Project_files/figure-latex/boxplot_sise-1.pdf> <./Project_files/figure-latex/ggpairs_sise-1.pdf>] [6]
 <Project_files/figure-latex/traceplot_1-1.pdf, id=226, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/traceplot_1-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/traceplot_1-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/traceplot_1-1.pdf  used on input line 412.
+Package pdftex.def Info: Project_files/figure-latex/traceplot_1-1.pdf  used on input line 414.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 <Project_files/figure-latex/traceplot_1-2.pdf, id=227, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/traceplot_1-2.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/traceplot_1-2.pdf>
-Package pdftex.def Info: Project_files/figure-latex/traceplot_1-2.pdf  used on input line 414.
+Package pdftex.def Info: Project_files/figure-latex/traceplot_1-2.pdf  used on input line 416.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 [7 <./Project_files/figure-latex/traceplot_1-1.pdf> <./Project_files/figure-latex/traceplot_1-2.pdf>]
 <Project_files/figure-latex/CI_param_1-1.pdf, id=246, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/CI_param_1-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/CI_param_1-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/CI_param_1-1.pdf  used on input line 433.
+Package pdftex.def Info: Project_files/figure-latex/CI_param_1-1.pdf  used on input line 435.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 <Project_files/figure-latex/validation_mod1-1.pdf, id=247, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/validation_mod1-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/validation_mod1-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/validation_mod1-1.pdf  used on input line 450.
+Package pdftex.def Info: Project_files/figure-latex/validation_mod1-1.pdf  used on input line 452.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 [8 <./Project_files/figure-latex/CI_param_1-1.pdf>]
 <Project_files/figure-latex/traceplot_2-1.pdf, id=259, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/traceplot_2-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/traceplot_2-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/traceplot_2-1.pdf  used on input line 484.
+Package pdftex.def Info: Project_files/figure-latex/traceplot_2-1.pdf  used on input line 486.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 [9 <./Project_files/figure-latex/validation_mod1-1.pdf>]
 <Project_files/figure-latex/ci_model2-1.pdf, id=272, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/ci_model2-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/ci_model2-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/ci_model2-1.pdf  used on input line 499.
+Package pdftex.def Info: Project_files/figure-latex/ci_model2-1.pdf  used on input line 501.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 <Project_files/figure-latex/validation_mod2-1.pdf, id=273, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/validation_mod2-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/validation_mod2-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/validation_mod2-1.pdf  used on input line 504.
+Package pdftex.def Info: Project_files/figure-latex/validation_mod2-1.pdf  used on input line 506.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 [10 <./Project_files/figure-latex/traceplot_2-1.pdf> <./Project_files/figure-latex/ci_model2-1.pdf>]
-Overfull \hbox (8.31096pt too wide) detected at line 529
+Overfull \hbox (8.31096pt too wide) detected at line 531
 \OML/lmm/m/it/10 y[] \OMS/lmsy/m/n/10 ^^X \OML/lmm/m/it/10 N\OT1/lmr/m/n/10 (\OML/lmm/m/it/10 ^^L[] \OT1/lmr/m/n/10 + \OML/lmm/m/it/10 mat[] \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 + \OML/lmm/m/it/10 leng[] \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 + \OML/lmm/m/it/10 leng[] \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 + \OML/lmm/m/it/10 ing[] \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 + \OML/lmm/m/it/10 ing[] \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 +  \OML/lmm/m/it/10 publica \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 + \OML/lmm/m/it/10 sexo[] \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[] \OT1/lmr/m/n/10 + \OML/lmm/m/it/10 interaccion \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[] \OMS/lmsy/m/n/10 ^^C \OML/lmm/m/it/10 x[]; ^^[[]\OT1/lmr/m/n/10 )
  []
 
@@ -730,143 +730,143 @@ Overfull \hbox (8.31096pt too wide) detected at line 529
 <Project_files/figure-latex/trace_model3-1.pdf, id=304, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/trace_model3-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/trace_model3-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/trace_model3-1.pdf  used on input line 549.
+Package pdftex.def Info: Project_files/figure-latex/trace_model3-1.pdf  used on input line 551.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 <Project_files/figure-latex/CI_model3-1.pdf, id=305, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/CI_model3-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/CI_model3-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/CI_model3-1.pdf  used on input line 566.
+Package pdftex.def Info: Project_files/figure-latex/CI_model3-1.pdf  used on input line 568.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 [12 <./Project_files/figure-latex/trace_model3-1.pdf>]
 <Project_files/figure-latex/validation_mod3-1.pdf, id=318, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/validation_mod3-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/validation_mod3-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/validation_mod3-1.pdf  used on input line 572.
+Package pdftex.def Info: Project_files/figure-latex/validation_mod3-1.pdf  used on input line 574.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 [13 <./Project_files/figure-latex/CI_model3-1.pdf> <./Project_files/figure-latex/validation_mod3-1.pdf>]
 <Project_files/figure-latex/trace_model3_big-1.pdf, id=334, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/trace_model3_big-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/trace_model3_big-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/trace_model3_big-1.pdf  used on input line 602.
+Package pdftex.def Info: Project_files/figure-latex/trace_model3_big-1.pdf  used on input line 604.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 <Project_files/figure-latex/CI_model3_big-1.pdf, id=335, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/CI_model3_big-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/CI_model3_big-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/CI_model3_big-1.pdf  used on input line 604.
+Package pdftex.def Info: Project_files/figure-latex/CI_model3_big-1.pdf  used on input line 606.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 617.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 619.
 (/Users/marco/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [14 <./Project_files/figure-latex/trace_model3_big-1.pdf> <./Project_files/figure-latex/CI_model3_big-1.pdf>]
 
-LaTeX Warning: Command \' invalid in math mode on input line 632.
+LaTeX Warning: Command \' invalid in math mode on input line 643.
 
 
-LaTeX Warning: Command \' invalid in math mode on input line 655.
+LaTeX Warning: Command \' invalid in math mode on input line 657.
 
 <Project_files/figure-latex/distribution3_big-1.pdf, id=353, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/distribution3_big-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/distribution3_big-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/distribution3_big-1.pdf  used on input line 675.
+Package pdftex.def Info: Project_files/figure-latex/distribution3_big-1.pdf  used on input line 677.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 [15]
 <Project_files/figure-latex/distribution3_big_trunc-1.pdf, id=359, 469.755pt x 325.215pt>
 File: Project_files/figure-latex/distribution3_big_trunc-1.pdf Graphic file (type pdf)
 <use Project_files/figure-latex/distribution3_big_trunc-1.pdf>
-Package pdftex.def Info: Project_files/figure-latex/distribution3_big_trunc-1.pdf  used on input line 683.
+Package pdftex.def Info: Project_files/figure-latex/distribution3_big_trunc-1.pdf  used on input line 685.
 (pdftex.def)             Requested size: 328.82626pt x 227.64894pt.
 [16 <./Project_files/figure-latex/distribution3_big-1.pdf> <./Project_files/figure-latex/distribution3_big_trunc-1.pdf>] [17]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 759.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 762.
 (/Users/marco/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 761.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 764.
 
 LaTeX Font Warning: Font shape `T1/lmtt/bx/it' in size <10> not available
-(Font)              Font shape `T1/lmtt/b/sl' tried instead on input line 761.
+(Font)              Font shape `T1/lmtt/b/sl' tried instead on input line 764.
 
-LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 869.
+LaTeX Font Info:    Trying to load font information for TS1+lmtt on input line 873.
 (/Users/marco/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmtt.fd
 File: ts1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [18]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [19]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [20]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [21]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [22]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [23]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [24]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [25]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [26]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [27]
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1347
+Underfull \vbox (badness 10000) detected at line 1359
  []
 
 [28] [29] [30] [31] (./Project.aux)
@@ -876,13 +876,13 @@ Package rerunfilecheck Info: File `Project.out' has not changed.
 Here is how much of TeX's memory you used:
  15075 strings out of 478053
  249390 string characters out of 5840127
- 1909793 words of memory out of 5000000
+ 1910793 words of memory out of 5000000
  34812 multiletter control sequences out of 15000+600000
  564194 words of font info for 79 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 72i,8n,79p,432b,512s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 72i,8n,79p,451b,512s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/Users/marco/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}</Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi7.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr7.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtko10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></Users/marco/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtti10.pfb>
-Output written on Project.pdf (33 pages, 4935953 bytes).
+Output written on Project.pdf (33 pages, 4936720 bytes).
 PDF statistics:
  549 PDF objects out of 1000 (max. 8388607)
  435 compressed objects within 5 object streams

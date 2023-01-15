@@ -115,11 +115,11 @@ Si ampliamos los datos y vemos la tabla de resultados para un mismo individuo en
 # Descripción de la base de datos
 
 La base de datos utilizada es una mezcla de los datos ofrecidos para cuarto de ESO y para sexto de primaria. La razón de realizar esta fusión es poder evaluar la evolución de una misma persona desde el final de la educación primaria hasta el final de la educación secundaria. Se puede acceder a la base de datos completa en los siguientes enlaces: 
-\
+
 [Avaluació de quart d’Educació Secundària Obligatòria | Dades obertes de Catalunya](https://analisi.transparenciacatalunya.cat/Educaci-/Avaluaci-de-quart-d-Educaci-Secund-ria-Obligat-ria/59vm-wwq7)
 
 [Avaluació de sisè d'educació primària | Dades obertes de Catalunya](https://analisi.transparenciacatalunya.cat/Educaci-/Avaluaci-de-sis-d-educaci-prim-ria/rk5x-gny6)
-\
+
 Los ficheros de datos contienen los resultados obtenidos por el alumnado de cuarto de ESO y sexto de primaria en la evaluación de competencias básicas desde el año 2012. Las bases de datos han sido actualizadas el 20 de octubre de 2022 y muestran registros de 46384 estudiantes.
 \
 Dada la extensión de la base de datos, hemos decidido mantener sólo algunas variables que hemos considerado significativas para evaluar los objetivos propuestos. El código de alumno se ha utilizado para unir las dos tablas y poder realizar diferentes comparativas.
@@ -155,7 +155,7 @@ La distribución de los alumnos por áreas es la siguiente:
 #########     Histogram by area     #########
 area = alumni$AREA_TERRITORIAL
 ggplot(data.frame(area), aes(x=area)) +
-  geom_bar(fill="royalblue3") +
+  geom_bar(fill="royalblue3", color = "grey") +
   theme(axis.text.x = element_text(angle = 335, vjust = 1, hjust=0)) +
   theme(plot.margin = margin(0,2,0,2, "cm")) +
   ggtitle("Distribución de los alumnos entre las áreas", ) + 
@@ -169,7 +169,7 @@ Según el tamaño de la población, los datos se concentran en los individuos de
 #########     Histogram by city     #########
 ciudad = factor(alumni$HÀBITAT, levels = c("Fins a 10000", "De 10001 a 100000", "Més de 100000"))
 ggplot(data.frame(ciudad), aes(x=ciudad)) +
-  geom_bar(fill="royalblue3") +
+  geom_bar(fill="royalblue3", color = "grey") +
   theme(axis.text.x = element_text(angle = 335, vjust = 0.5, hjust=0)) +
   theme(plot.margin = margin(0,1,0,0, "cm")) +
   ggtitle("Distribución de los alumnos según tamaño de la localidad", ) + 
@@ -195,6 +195,7 @@ ggplot(data = df2, aes(x=GENERE,y=value, fill=GENERE)) +
   labs(title = 'Comparación de resultados por género',
        y='Notas',x='') +
   facet_wrap(~Test,nrow = 1)
+
 ```
 
 
@@ -925,11 +926,11 @@ Aquí presentamos el análisis de los valores medios obtenidos de la distribuci�
 
 * $ing6 = `r round(alumni.sim.3_big$BUGSoutput$summary[4,1],2)`$: El coeficiente en este caso es positivo, por lo que un alumno que haya obtenido un buen resultado en inglés en el examen de sexto, tenderá a obtener un buen resultado también en matemáticas de cuarto.
 
-* $interacción = `r round(alumni.sim.3_big$BUGSoutput$summary[5,1],2)`$: El valor del coeficiente es negativo. Este resultado es muy interesante cuando se compara con el de leng4 ya que el coeficiente se vuelve negativo en promedio para leng4. Por lo tanto, según el modelo, un estudiante varón mostrará un rendimiento opuesto al promedio de los alumnos en ambas pruebas.
-
 * $leng4 = `r round(alumni.sim.3_big$BUGSoutput$summary[6,1],2)`$: El valor del coeficiente es positivo. Teniendo en cuenta la interacción esto  significa que una chica que en promedio obtiene buenos resultados en lenguas en la prueba de cuarto también tendrá un resultado por encima del promedio en la de matemáticas del mismo año.
 
 * $leng6 = `r round(alumni.sim.3_big$BUGSoutput$summary[7,1],2)`$: Siendo positivo el resultado de mate4 es consistente con el de leng 6 con respecto a la media.
+
+* $interacción = `r round(alumni.sim.3_big$BUGSoutput$summary[5,1],2)`$: El valor del coeficiente es negativo. Este resultado es muy interesante cuando se compara con el de leng4 ya que el coeficiente se vuelve negativo en promedio para leng4. Por lo tanto, según el modelo, un estudiante varón mostrará un rendimiento opuesto al promedio de los alumnos en ambas pruebas.
 
 * $mate6 = `r round(alumni.sim.3_big$BUGSoutput$summary[8,1],2)`$: También en este caso el coeficiente es positivo, lo que significa que el alumnado que destaca en matemáticas al final de la primaria sigue estando por encima de la media en esta materia al final de la ESO. Asimismo, observamos que éste es el mayor coeficiente de todo el modelo, lo que implica que la puntuación de matemáticas en sexto es la que más contribuye en la predicción del resultado de la prueba de matemáticas de cuarto de ESO.
 
@@ -946,7 +947,9 @@ La distribución resultante es la siguiente:
 
 
 ```{r prediction3_big}
+
 #########      Prediciton model 3 big    #########
+
 M = dim(test)[1]
 set.seed(2023)
 id_test_pred = sample(1:dim(test)[1],M)
@@ -962,26 +965,34 @@ y_t = rnorm(M, X %*% C, confid.inter["sigma_y",3]) + m4
 ```{r distribution3_big, message=FALSE}
 #########  Prevision model 3 big #########
 ggplot() +
-  geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density..), colour="royalblue3", fill="royalblue3",binwidth=1) +
-  geom_density(data=train, aes(x = PMAT_4+m4), color = "red") +
+  geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density.., fill = "royalblue3", colour="grey"),binwidth=1) +
+  geom_density(data=train, aes(x = PMAT_4+m4, fill = "#00000000",  color = "red")) +
   ggtitle("Comparación entre distribución predictiva posterior y PMAT_4", ) + 
-  ylab("Denisidad") +
-  xlab("Nota") 
+  ylab("Densidad") +
+  xlab("Nota") +
+  scale_colour_identity(name = 'Distribución', guide = 'legend',labels = c("Empírica", "Teórica")) +
+  theme(legend.position=c(0.15,0.75)) +
+  guides(color = guide_legend(override.aes = list(fill = c("royalblue3", "white")))) +
+  scale_fill_identity(guide="none")
 ```
 
 
-Como podemos observar, la distribución describe bastante bien los datos aunque muchas de las observaciones pronosticadas superan el límite de 100. Por lo tanto, decidimos usar una distribución normal truncada entre 0 y 100 con la misma media y varianza que se usaron anteriormente para predecir los resultados de los estudiantes.
+Como podemos observar, la distribución describe bastante bien los datos aunque muchas de las observaciones pronosticadas superan el límite de 100. Por lo tanto, decidimos usar una distribución normal truncada entre 0 y 100 con la misma media y varianza que se usaron anteriormente para predecir los resultados de los estudiant
 
 
 ```{r distribution3_big_trunc, message=FALSE}
 #########  Prevision 3 big truncated #########
 y_t <- rtruncnorm(M, a = -m4 ,b = 100-m4, X %*% C, confid.inter["sigma_y",3]) + m4
 ggplot() +
-  geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density..), colour="royalblue3", fill="royalblue3",binwidth=1) +
-  geom_density(data=train, aes(x = PMAT_4+m4), color = "red") +
+  geom_histogram(data=data.frame(y_t), aes(x=y_t, y=..density.., colour="grey", fill="royalblue3"),binwidth=1) +
+  geom_density(data=train, aes(x = PMAT_4+m4,fill = "00000000", color = "red")) +
   ggtitle("Comparación entre la distribución posterior predictiva truncada y PMAT_4", ) + 
   ylab("Densidad") +
-  xlab("Nota") 
+  xlab("Nota") +
+  scale_colour_identity(name = 'Distribución', guide = 'legend',labels = c("Empírica", "Teórica")) +
+  theme(legend.position=c(0.15,0.75)) +
+  guides(color = guide_legend(override.aes = list(fill = c("royalblue3", "white")))) +
+  scale_fill_identity(guide="none")
 ```
 
 
@@ -998,7 +1009,7 @@ El objetivo principal de nuestro trabajo consistía en evaluar cuál es el resul
 Después de evaluar diferentes modelos y de descartar variables que inicialmente pensábamos que podían influir en los resultados finales, hemos validado el último modelo como el que mejor explica nuestros datos y el que mejores predicciones puede ofrecer para estimar la puntuación de una persona en la prueba de competencia matemática de Cataluña.
 \
 Teniendo eso en cuesta procedemos a dar respuesta a las preguntas con las que iniciábamos este trabajo:
-\
+
 •	¿Podemos considerar el género un factor relevante en el resultado de las pruebas de competencia matemática al acabar la educación secundaria?
 
 Dados los resultados, podemos considerar que, efectivamente, se trata de un factor relevante. Sería interesante realizar algún otro análisis para confirmar esta creencia, pero el coeficiente de sexo muestra que los niños obtendrían un promedio de 2,52 puntos más que las niñas en esta prueba.
