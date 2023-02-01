@@ -6,7 +6,8 @@
 <ul>
   <li>Aránzazu Aráiztegui</li>
   <li>Lorenzo Ferrara (<a href="https://github.com/lorenzoferrara/" target="_blank">Github</a>, <a href="https://www.linkedin.com/in/lorenzo-ferrara-567211244/" target="_blank">Linkedin</a>) </li> 
-  <li>Marco Lucchini</li>
+  <li>Marco Lucchini (<a href="https://github.com/marcolucchini/" target="_blank">Github</a>, <a href="https://www.linkedin.com/in/marco-lucchini-294801218/" target="_blank">Linkedin</a>)</li>
+  
 </ul>
 </p>
 
