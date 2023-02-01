@@ -1,4 +1,4 @@
-<h1 align="left">Bayesian Study about Gender Bias in Mathematics in the region of Catalonia </ >
+<h1 align="left">Bayesian study about gender bias in Mathematics in the region of Catalonia </ >
 
 <h4 align="left">Assignment for the course of Bayesian Methods at Universitat Politècnica de Catalunya, 2022/2023</h4>
 
