@@ -4,7 +4,7 @@
 
 <p align="left"> Team members:
 <ul>
-  <li>Aránzazu Aráiztegui</li> (<a href="https://github.com/Arantxatxu" target="_blank">Github</a>)
+  <li>Aránzazu Aráiztegui (<a href="https://github.com/Arantxatxu" target="_blank">Github</a>) </li>
   <li>Lorenzo Ferrara (<a href="https://github.com/lorenzoferrara/" target="_blank">Github</a>, <a href="https://www.linkedin.com/in/lorenzo-ferrara-567211244/" target="_blank">Linkedin</a>) </li> 
   <li>Marco Lucchini (<a href="https://github.com/marcolucchini/" target="_blank">Github</a>, <a href="https://www.linkedin.com/in/marco-lucchini-294801218/" target="_blank">Linkedin</a>)</li>
   
